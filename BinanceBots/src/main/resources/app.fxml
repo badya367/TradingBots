@@ -84,7 +84,7 @@
                                     </HBox>
                                     <HBox prefHeight="37.0" prefWidth="231.0">
                                        <children>
-                                          <TextField alignment="CENTER" prefHeight="37.0" prefWidth="230.0" promptText="Дистанция для усреднения">
+                                          <TextField fx:id="averagingStep" alignment="CENTER" prefHeight="37.0" prefWidth="230.0" promptText="Дистанция для усреднения">
                                              <font>
                                                 <Font size="16.0" />
                                              </font>
@@ -106,7 +106,7 @@
                                     </HBox>
                                     <HBox prefHeight="39.0" prefWidth="230.0">
                                        <children>
-                                          <TextField alignment="CENTER" prefHeight="37.0" prefWidth="229.0" promptText="Множитель объёма позиции">
+                                          <TextField fx:id="multiplier" alignment="CENTER" prefHeight="37.0" prefWidth="229.0" promptText="Множитель объёма позиции">
                                              <font>
                                                 <Font size="16.0" />
                                              </font>
@@ -128,7 +128,7 @@
                                     </HBox>
                                     <HBox prefHeight="39.0" prefWidth="230.0">
                                        <children>
-                                          <TextField alignment="CENTER" prefHeight="37.0" prefWidth="229.0" promptText="Максимальное">
+                                          <TextField fx:id="quantityOrders" alignment="CENTER" prefHeight="37.0" prefWidth="229.0" promptText="Максимальное">
                                              <font>
                                                 <Font size="16.0" />
                                              </font>
@@ -150,7 +150,7 @@
                                     </HBox>
                                     <HBox prefHeight="39.0" prefWidth="230.0">
                                        <children>
-                                          <TextField alignment="CENTER" prefHeight="37.0" prefWidth="229.0" promptText="В минутах ">
+                                          <TextField fx:id="averagingTimer" alignment="CENTER" prefHeight="37.0" prefWidth="229.0" promptText="В минутах ">
                                              <font>
                                                 <Font size="16.0" />
                                              </font>
@@ -174,7 +174,7 @@
                                        <children>
                                           <HBox prefHeight="37.0" prefWidth="231.0">
                                              <children>
-                                                <TextField alignment="CENTER" prefHeight="37.0" prefWidth="230.0" promptText="Максимальная для пары">
+                                                <TextField fx:id="sumToTrade" alignment="CENTER" prefHeight="37.0" prefWidth="230.0" promptText="Максимальная для пары">
                                                    <font>
                                                       <Font size="16.0" />
                                                    </font>
@@ -198,7 +198,11 @@
                                     </HBox>
                                     <HBox prefHeight="37.0" prefWidth="229.0">
                                        <children>
-                                          <TextField editable="false" prefHeight="38.0" prefWidth="229.0" />
+                                          <Label fx:id="startingLotVolume" alignment="CENTER" prefHeight="38.0" prefWidth="229.0">
+                                             <font>
+                                                <Font size="16.0" />
+                                             </font>
+                                          </Label>
                                        </children></HBox>
                                  </children>
                               </HBox>
@@ -215,13 +219,17 @@
                                     </HBox>
                                     <HBox prefHeight="37.0" prefWidth="229.0">
                                        <children>
-                                          <TextField editable="false" prefHeight="37.0" prefWidth="229.0" />
+                                          <Label fx:id="tradingRange" alignment="CENTER" prefHeight="42.0" prefWidth="230.0">
+                                             <font>
+                                                <Font size="16.0" />
+                                             </font>
+                                          </Label>
                                        </children>
                                     </HBox>
                                  </children>
                               </HBox>
                            </children></AnchorPane>
-                        <Button fx:id="applyButton" layoutX="245.0" layoutY="469.0" mnemonicParsing="false" onAction="#applyButtonAction" prefHeight="25.0" prefWidth="111.0" text="Применить" textAlignment="CENTER" />
+                        <Button fx:id="applySettingsButton" layoutX="245.0" layoutY="469.0" mnemonicParsing="false" onAction="#applySettingsButtonAction" prefHeight="25.0" prefWidth="111.0" text="Применить" textAlignment="CENTER" />
                      </children></AnchorPane>
             </content>
           </Tab>

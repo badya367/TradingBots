@@ -4,12 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fe4f2d17-765e-4b5c-94b2-d67003c6b666" name="Changes" comment="Удалил ненужные папки в модуле TradingBots">
-      <change afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/model/BinanceBotConfiguration.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/AppleConfigServiceImpl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/ApplyConfigService.java" afterDir="false" />
+    <list default="true" id="fe4f2d17-765e-4b5c-94b2-d67003c6b666" name="Changes" comment="Design prototype, adding services and models">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/AppMainController.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/AppMainController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/model/BinanceBotConfiguration.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/model/BinanceBotConfiguration.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/AppleConfigServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/AppleConfigServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/ApplyConfigService.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/ApplyConfigService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/resources/app.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/resources/app.fxml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -154,12 +154,21 @@
       <option name="project" value="LOCAL" />
       <updated>1705487007830</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Design prototype, adding services and models">
+      <option name="closed" value="true" />
+      <created>1705671496752</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1705671496752</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Создана первоначальная структура проекте и добавлено дефолтное окно рабочего приложения" />
     <MESSAGE value="Удалил ненужные папки в модуле TradingBots" />
-    <option name="LAST_COMMIT_MESSAGE" value="Удалил ненужные папки в модуле TradingBots" />
+    <MESSAGE value="Design prototype, adding services and models" />
+    <option name="LAST_COMMIT_MESSAGE" value="Design prototype, adding services and models" />
   </component>
 </project>
