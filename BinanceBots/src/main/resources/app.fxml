@@ -229,9 +229,75 @@
                                  </children>
                               </HBox>
                            </children></AnchorPane>
-                        <Button fx:id="applySettingsButton" layoutX="245.0" layoutY="469.0" mnemonicParsing="false" onAction="#applySettingsButtonAction" prefHeight="25.0" prefWidth="111.0" text="Применить" textAlignment="CENTER" />
+                        <Button fx:id="applySettingsButton" layoutX="245.0" layoutY="440.0" mnemonicParsing="false" onAction="#applySettingsButtonAction" prefHeight="30.0" prefWidth="111.0" text="Применить" textAlignment="CENTER" />
+                        <HBox layoutX="14.0" layoutY="489.0" prefHeight="45.0" prefWidth="180.0">
+                           <children>
+                              <Button fx:id="saveConfigBtn" contentDisplay="CENTER" mnemonicParsing="false" onAction="#saveConfigBtnAction" prefHeight="30.0" prefWidth="180.0" text="Сохранить конфигурацию" textAlignment="CENTER" />
+                           </children></HBox>
+                        <HBox layoutX="406.0" layoutY="488.0" prefHeight="45.0" prefWidth="180.0">
+                           <children>
+                              <Button fx:id="loadConfigBtn" contentDisplay="CENTER" mnemonicParsing="false" onAction="#loadConfigBtnAction" prefHeight="30.0" prefWidth="180.0" text="Загрузить конфигурацию" />
+                           </children>
+                        </HBox>
                      </children></AnchorPane>
             </content>
+          </Tab>
+          <Tab text="Токены">
+             <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="476.0" prefWidth="600.0">
+                  <children>
+                     <AnchorPane layoutX="13.0" layoutY="22.0" prefHeight="171.0" prefWidth="573.0">
+                           <children>
+                              <HBox layoutX="14.0" layoutY="14.0" prefHeight="42.0" prefWidth="549.0">
+                                 <children>
+                                    <HBox prefHeight="42.0" prefWidth="100.0">
+                                       <children>
+                                          <Label alignment="CENTER" prefHeight="43.0" prefWidth="100.0" text="API key:" textAlignment="CENTER">
+                                             <font>
+                                                <Font size="16.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </HBox>
+                                    <HBox prefHeight="42.0" prefWidth="450.0">
+                                       <children>
+                                          <TextField fx:id="apiKey" alignment="CENTER" prefHeight="42.0" prefWidth="450.0" promptText="Введите свой API key">
+                                             <font>
+                                                <Font size="16.0" />
+                                             </font>
+                                          </TextField>
+                                       </children>
+                                    </HBox>
+                                 </children>
+                              </HBox>
+                              <HBox layoutX="14.0" layoutY="73.0" prefHeight="42.0" prefWidth="549.0">
+                                 <children>
+                                    <HBox prefHeight="42.0" prefWidth="100.0">
+                                       <children>
+                                          <Label alignment="CENTER" prefHeight="44.0" prefWidth="99.0" text="Secret key:" textAlignment="CENTER">
+                                             <font>
+                                                <Font size="16.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </HBox>
+                                    <HBox prefHeight="42.0" prefWidth="451.0">
+                                       <children>
+                                          <TextField fx:id="secretKey" alignment="CENTER" prefHeight="42.0" prefWidth="450.0" promptText="Введите свой Secret key">
+                                             <font>
+                                                <Font size="16.0" />
+                                             </font>
+                                          </TextField>
+                                       </children>
+                                    </HBox>
+                                 </children>
+                              </HBox>
+                           </children></AnchorPane>
+                  </children>
+                </AnchorPane>
+             </content>
+
+
           </Tab>
         </tabs>
       </TabPane>

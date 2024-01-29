@@ -2,7 +2,7 @@ package org.botFromSpot.guiApp.model;
 
 public class BinanceBotConfiguration {
     private double takeProfit;
-    private double averagingStep;
+    private double averagingStep;  
     private double multiplier;
     private int quantityOrders;
     private int averagingTimer;

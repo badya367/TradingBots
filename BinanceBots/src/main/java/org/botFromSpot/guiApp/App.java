@@ -18,7 +18,9 @@ public class App extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
         FXMLLoader loader = new FXMLLoader();
-        loader.setController(new AppMainController());
+        AppMainController appMainController = new AppMainController();
+        loader.setController(appMainController);
+        appMainController.setStage(primaryStage);
         URL xmlUrl = getClass().getResource("/app.fxml");
         System.out.println(xmlUrl);
         loader.setLocation(xmlUrl);

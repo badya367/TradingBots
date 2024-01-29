@@ -2,8 +2,8 @@ package org.botFromSpot.guiApp.services;
 
 import org.botFromSpot.guiApp.model.BinanceBotConfiguration;
 
-public class AppleConfigServiceImpl implements ApplyConfigService{
-
+public class ApplyConfigServiceImpl implements ApplyConfigService{
+    private DataBaseService dataBaseService;
     @Override
     public void applyConfig(BinanceBotConfiguration binanceBotConfiguration) {
 
