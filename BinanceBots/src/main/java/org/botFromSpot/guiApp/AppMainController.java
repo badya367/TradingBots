@@ -2,9 +2,7 @@ package org.botFromSpot.guiApp;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.botFromSpot.guiApp.model.BinanceBotConfiguration;
@@ -54,28 +52,44 @@ public class AppMainController {
 
     @FXML
     public void applySettingsButtonAction(ActionEvent event) {
-        startingLotVolume.setText(String.valueOf(calculateStartingLotVolume(sumToTrade,multiplier,quantityOrders)));
-        tradingRange.setText(String.valueOf(calculateTradingRange(averagingStep,quantityOrders)));
-        System.out.println(event);
-        System.out.println(takeProfit + ". Значение: " + takeProfit.getText());
-        System.out.println(averagingStep + ". Значение: " + averagingStep.getText());
-        System.out.println(multiplier + ". Значение: " + multiplier.getText());
-        System.out.println(quantityOrders + ". Значение: " + quantityOrders.getText());
-        System.out.println(averagingTimer + ". Значение: " + averagingTimer.getText());
-        System.out.println(sumToTrade + ". Значение: " + sumToTrade.getText());
-        System.out.println(startingLotVolume + ". Значение: " + startingLotVolume.getText());
-        System.out.println(tradingRange + ". Значение: " + tradingRange.getText());
+        try {
+            startingLotVolume.setText(String.valueOf(BinanceBotConfiguration.calculateStartingLotVolume(sumToTrade, multiplier, quantityOrders)));
+            tradingRange.setText(String.valueOf(BinanceBotConfiguration.calculateTradingRange(averagingStep, quantityOrders)));
+            System.out.println(event);
+            System.out.println(takeProfit + ". Значение: " + takeProfit.getText());
+            System.out.println(averagingStep + ". Значение: " + averagingStep.getText());
+            System.out.println(multiplier + ". Значение: " + multiplier.getText());
+            System.out.println(quantityOrders + ". Значение: " + quantityOrders.getText());
+            System.out.println(averagingTimer + ". Значение: " + averagingTimer.getText());
+            System.out.println(sumToTrade + ". Значение: " + sumToTrade.getText());
+            System.out.println(startingLotVolume + ". Значение: " + startingLotVolume.getText());
+            System.out.println(tradingRange + ". Значение: " + tradingRange.getText());
 
-        BinanceBotConfiguration binanceBotConfiguration = new BinanceBotConfiguration();
+            BinanceBotConfiguration binanceBotConfiguration = new BinanceBotConfiguration();
 
-        binanceBotConfiguration.setTakeProfit(Double.parseDouble(takeProfit.getText()));
-        binanceBotConfiguration.setAveragingStep(Double.parseDouble(averagingStep.getText()));
-        binanceBotConfiguration.setMultiplier(Double.parseDouble(multiplier.getText()));
-        binanceBotConfiguration.setQuantityOrders(Integer.parseInt(quantityOrders.getText()));
-        binanceBotConfiguration.setAveragingTimer(Integer.parseInt(averagingTimer.getText()));
-        binanceBotConfiguration.setSumToTrade(Double.parseDouble(sumToTrade.getText()));
-        binanceBotConfiguration.setStartingLotVolume(calculateStartingLotVolume(sumToTrade,multiplier,quantityOrders));
-        binanceBotConfiguration.setTradingRange(calculateTradingRange(averagingStep,quantityOrders));
+            binanceBotConfiguration.setTakeProfit(Double.parseDouble(takeProfit.getText()));
+            binanceBotConfiguration.setAveragingStep(Double.parseDouble(averagingStep.getText()));
+            binanceBotConfiguration.setMultiplier(Double.parseDouble(multiplier.getText()));
+            binanceBotConfiguration.setQuantityOrders(Integer.parseInt(quantityOrders.getText()));
+            binanceBotConfiguration.setAveragingTimer(Integer.parseInt(averagingTimer.getText()));
+            binanceBotConfiguration.setSumToTrade(Double.parseDouble(sumToTrade.getText()));
+            binanceBotConfiguration.setStartingLotVolume(BinanceBotConfiguration.calculateStartingLotVolume(sumToTrade, multiplier, quantityOrders));
+            binanceBotConfiguration.setTradingRange(BinanceBotConfiguration.calculateTradingRange(averagingStep, quantityOrders));
+        } catch (RuntimeException e) {
+            System.err.println("Произошла ошибка после нажатия кнопки 'Применить': " + e.getMessage());
+            // Показываем диалоговое окно с сообщением об ошибке
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Ошибка ввода");
+            alert.setHeaderText("Пожалуйста, проверьте правильность введенных данных");
+            // Добавляем кнопку "OK" для закрытия диалогового окна
+            alert.getButtonTypes().setAll(ButtonType.OK);
+            // Отображаем диалоговое окно и ждем, пока пользователь его закроет
+            alert.showAndWait();
+        }
+    }
+    @FXML
+    public void emptyFieldsForConfig() {
+
     }
     @FXML
     public void saveConfigBtnAction(ActionEvent event) {
@@ -94,20 +108,9 @@ public class AppMainController {
     }
 
 
-    public static double calculateStartingLotVolume(TextField sumToTrade, TextField multiplier, TextField quantityOrders){
-        double sum = Double.parseDouble(sumToTrade.getText());
-        double multi = Double.parseDouble(multiplier.getText());
-        double quantity = Double.parseDouble(quantityOrders.getText());
-        double startingLotVolume;
-        for (int i = 0; i < quantity; i++){
-            sum = sum/multi;
-        }
-        startingLotVolume = sum;
-        return startingLotVolume;
-    }
 
-    public static double calculateTradingRange(TextField averagingStep, TextField quantityOrders){
-        return Double.parseDouble(averagingStep.getText()) * Integer.parseInt(quantityOrders.getText());
-    }
+
+
+
 
 }

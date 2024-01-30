@@ -1,6 +1,9 @@
 package org.botFromSpot.guiApp.model;
 
+import javafx.scene.control.TextField;
+
 public class BinanceBotConfiguration {
+    private int pairId;
     private double takeProfit;
     private double averagingStep;  
     private double multiplier;
@@ -11,6 +14,14 @@ public class BinanceBotConfiguration {
     private double tradingRange;
     //todo Add lombok Library
 
+
+    public int getPairId() {
+        return pairId;
+    }
+    public void setPairId(int pairId) {
+        this.pairId = pairId;
+    }
+//---------------------------------------------------------------------------------//
     public double getTakeProfit() {
         return takeProfit;
     }
@@ -65,5 +76,21 @@ public class BinanceBotConfiguration {
     }
     public void setTradingRange(double tradingRange) {
         this.tradingRange = tradingRange;
+    }
+
+    public static double calculateTradingRange(TextField averagingStep, TextField quantityOrders){
+        return Double.parseDouble(averagingStep.getText()) * Integer.parseInt(quantityOrders.getText());
+    }
+
+    public static double calculateStartingLotVolume(TextField sumToTrade, TextField multiplier, TextField quantityOrders){
+        double sum = Double.parseDouble(sumToTrade.getText());
+        double multi = Double.parseDouble(multiplier.getText());
+        double quantity = Double.parseDouble(quantityOrders.getText());
+        double startingLotVolume;
+        for (int i = 0; i < quantity; i++){
+            sum = sum/multi;
+        }
+        startingLotVolume = sum;
+        return startingLotVolume;
     }
 }
