@@ -21,7 +21,7 @@
                         </ScrollPane>
                         <HBox layoutX="17.0" layoutY="14.0" prefHeight="25.0" prefWidth="567.0">
                            <children>
-                              <Button fx:id="loadCashButton" mnemonicParsing="false" text="Загрузить валютную пару" />
+                              <Button fx:id="loadPairButton" mnemonicParsing="false" onAction="#loadPairButtonAction" text="Загрузить валютную пару" />
                            </children>
                         </HBox>
                         <ScrollPane layoutX="221.0" layoutY="39.0" prefHeight="443.0" prefWidth="368.0">
@@ -292,6 +292,7 @@
                                     </HBox>
                                  </children>
                               </HBox>
+                              <Button fx:id="ApplyTokensButton" contentDisplay="CENTER" layoutX="261.0" layoutY="132.0" mnemonicParsing="false" onAction="#applyTokensBtnAction" text="Подтвердить" />
                            </children></AnchorPane>
                   </children>
                 </AnchorPane>

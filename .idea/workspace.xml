@@ -4,14 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fe4f2d17-765e-4b5c-94b2-d67003c6b666" name="Changes" comment="Добавил переменные для каждого поля в настройках(AppMainController.java) &#10;Обновил метод applySettingsButtonAction(AppMainController.java)&#10;Обновил модель данных в классе(BinanceBotConfiguration.java)&#10;Добавил метод &quot;loadDefaultConfig&quot; в интерфейс(ApplyConfigService.java)&#10;Имлементировал метод &quot;loadDefaultConfig&quot; в классе(AppleСonfigServiceImpl.java)">
-      <change afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/model/BinancePair.java" afterDir="false" />
+    <list default="true" id="fe4f2d17-765e-4b5c-94b2-d67003c6b666" name="Changes" comment="Добавил обработку ошибки ввода данных(AppMainController.java) &#10;Добавил класс BinancePair.java(BinancePair.java)&#10;Добавил поле pairId для объекта(BinanceBotConfiguration.java)&#10;Обновил интерфейс (DataVaseService.java)&#10;Сделал реализацию класса (DataBaseSQLiteImpl.java)">
+      <change afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/BinanceApiMethods.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/module-info.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/AppMainController.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/AppMainController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/model/BinanceBotConfiguration.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/model/BinanceBotConfiguration.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/DataBaseSQLiteImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/DataBaseSQLiteImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/DataBaseService.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/DataBaseService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/model/BinanceTokens.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/model/BinanceTokens.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/resources/app.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/resources/app.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -75,7 +75,7 @@
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "D:/IntellijIDEA_Project/JavaEducationProject",
     "onboarding.tips.debug.path": "D:/IntellijIDEA_Project/TradingBots/src/main/java/org/example/sample/Main.java",
-    "project.structure.last.edited": "Artifacts",
+    "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.35172415",
     "settings.editor.selected.configurable": "preferences.pluginManager"
@@ -181,7 +181,15 @@
       <option name="project" value="LOCAL" />
       <updated>1705962496100</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Добавил обработку ошибки ввода данных(AppMainController.java) &#10;Добавил класс BinancePair.java(BinancePair.java)&#10;Добавил поле pairId для объекта(BinanceBotConfiguration.java)&#10;Обновил интерфейс (DataVaseService.java)&#10;Сделал реализацию класса (DataBaseSQLiteImpl.java)">
+      <option name="closed" value="true" />
+      <created>1706632075709</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1706632075709</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -189,6 +197,7 @@
     <MESSAGE value="Удалил ненужные папки в модуле TradingBots" />
     <MESSAGE value="Design prototype, adding services and models" />
     <MESSAGE value="Добавил переменные для каждого поля в настройках(AppMainController.java) &#10;Обновил метод applySettingsButtonAction(AppMainController.java)&#10;Обновил модель данных в классе(BinanceBotConfiguration.java)&#10;Добавил метод &quot;loadDefaultConfig&quot; в интерфейс(ApplyConfigService.java)&#10;Имлементировал метод &quot;loadDefaultConfig&quot; в классе(AppleСonfigServiceImpl.java)" />
-    <option name="LAST_COMMIT_MESSAGE" value="Добавил переменные для каждого поля в настройках(AppMainController.java) &#10;Обновил метод applySettingsButtonAction(AppMainController.java)&#10;Обновил модель данных в классе(BinanceBotConfiguration.java)&#10;Добавил метод &quot;loadDefaultConfig&quot; в интерфейс(ApplyConfigService.java)&#10;Имлементировал метод &quot;loadDefaultConfig&quot; в классе(AppleСonfigServiceImpl.java)" />
+    <MESSAGE value="Добавил обработку ошибки ввода данных(AppMainController.java) &#10;Добавил класс BinancePair.java(BinancePair.java)&#10;Добавил поле pairId для объекта(BinanceBotConfiguration.java)&#10;Обновил интерфейс (DataVaseService.java)&#10;Сделал реализацию класса (DataBaseSQLiteImpl.java)" />
+    <option name="LAST_COMMIT_MESSAGE" value="Добавил обработку ошибки ввода данных(AppMainController.java) &#10;Добавил класс BinancePair.java(BinancePair.java)&#10;Добавил поле pairId для объекта(BinanceBotConfiguration.java)&#10;Обновил интерфейс (DataVaseService.java)&#10;Сделал реализацию класса (DataBaseSQLiteImpl.java)" />
   </component>
 </project>
