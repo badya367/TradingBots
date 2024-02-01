@@ -7,14 +7,13 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.botFromSpot.guiApp.model.BinanceBotConfiguration;
 import org.botFromSpot.guiApp.model.BinancePair;
 import org.botFromSpot.guiApp.model.BinanceTokens;
+import org.botFromSpot.guiApp.services.ApplyConfigService;
 import org.botFromSpot.guiApp.services.BinanceApiMethods;
+import org.botFromSpot.guiApp.services.BinanceBotConfiguration;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 
 public class AppMainController {
     @FXML
@@ -52,12 +51,29 @@ public class AppMainController {
 
     private Stage stage;
 
-    public void setStage(Stage stage) {this.stage = stage;}
+
+    private ApplyConfigService applyConfigService;
+
+    public void setStage(Stage stage) {
+        this.stage = stage;
+    }
+
+    public void setApplyConfigService(ApplyConfigService applyConfigService) {
+        this.applyConfigService = applyConfigService;
+    }
 
     @FXML
     public void initialize() {
         testTextOutput.setText("Loaded");
+        BinanceBotConfiguration binanceBotConfiguration = applyConfigService.loadDefaultConfig();
+        takeProfit.setText(String.valueOf(binanceBotConfiguration.getTakeProfit()));
+        averagingStep.setText(String.valueOf(binanceBotConfiguration.getAveragingStep()));
+        multiplier.setText(String.valueOf(binanceBotConfiguration.getMultiplier()));
+        quantityOrders.setText(String.valueOf(binanceBotConfiguration.getQuantityOrders()));
+        averagingTimer.setText(String.valueOf(binanceBotConfiguration.getAveragingTimer()));
+        sumToTrade.setText(String.valueOf(binanceBotConfiguration.getSumToTrade()));
     }
+
     @FXML
     public void loadPairButtonAction(ActionEvent event) {
         // Новое окно после нажатия на кнопку
@@ -89,6 +105,7 @@ public class AppMainController {
         // Показываем окно
         stage.show();
     }
+
     @FXML
     public void applySettingsButtonAction(ActionEvent event) {
         try {
@@ -126,10 +143,12 @@ public class AppMainController {
             alert.showAndWait();
         }
     }
+
     @FXML
     public void emptyFieldsForConfig() {
 
     }
+
     @FXML
     public void saveConfigBtnAction(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
@@ -139,6 +158,7 @@ public class AppMainController {
         File file = fileChooser.showSaveDialog(stage);
         System.out.println("ПОКА ЧТО ЗАГЛУШКА: " + event); //Файл не создается
     }
+
     @FXML
     public void loadConfigBtnAction(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
@@ -167,10 +187,6 @@ public class AppMainController {
         }
 
     }
-
-
-
-
 
 
 }

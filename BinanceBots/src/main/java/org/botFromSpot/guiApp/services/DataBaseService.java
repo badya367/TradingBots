@@ -1,6 +1,5 @@
 package org.botFromSpot.guiApp.services;
 
-import org.botFromSpot.guiApp.model.BinanceBotConfiguration;
 import org.botFromSpot.guiApp.model.BinancePair;
 
 import java.sql.Connection;

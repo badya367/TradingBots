@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean id="testProperties"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>testBotConfig.properties</value>
+                <value>database.properties</value>
+            </list>
+        </property>
+    </bean>
+    <bean id="appMainController" class="org.botFromSpot.guiApp.AppMainController">
+        <property name="applyConfigService" ref="applyConfigService"/>
+    </bean>
+    <bean id="applyConfigService" class="org.botFromSpot.guiApp.services.ApplyConfigServiceImpl">
+        <property name="dataBaseService" ref="dataBaseService"/>
+        <property name="takeProfit" value="${test.takeProfit}"/>
+        <property name="averagingStep" value="${test.averagingStep}"/>
+        <property name="multiplier" value="${test.multiplier}"/>
+        <property name="quantityOrders" value="${test.quantityOrders}"/>
+        <property name="sumToTrade" value="${test.sumToTrade}"/>
+    </bean>
+    <bean id="dataBaseService" class="org.botFromSpot.guiApp.services.DataBaseSQLiteImpl" init-method="init">
+        <property name="url" value="${database.url}"/>
+    </bean>
+</beans>

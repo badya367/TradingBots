@@ -1,0 +1,4 @@
+CREATE TABLE IF NOT EXISTS pairs (
+    id Number PRIMARY KEY AUTOINCREMENT,
+    pairName TEXT NOT NULL
+    );

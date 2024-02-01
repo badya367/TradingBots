@@ -1,4 +1,4 @@
-package org.botFromSpot.guiApp.model;
+package org.botFromSpot.guiApp.services;
 
 import javafx.scene.control.TextField;
 
@@ -14,6 +14,10 @@ public class BinanceBotConfiguration {
     private double tradingRange;
     //todo Add lombok Library
 
+
+    public BinanceBotConfiguration() {
+
+    }
 
     public int getPairId() {
         return pairId;

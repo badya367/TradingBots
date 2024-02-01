@@ -1,34 +1,42 @@
 package org.botFromSpot.guiApp.services;
 
-import org.botFromSpot.guiApp.model.BinanceBotConfiguration;
 import org.botFromSpot.guiApp.model.BinancePair;
+import org.botFromSpot.guiApp.utils.Constants;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class DataBaseSQLiteImpl implements DataBaseService{
+public class DataBaseSQLiteImpl implements DataBaseService {
     private static DataBaseSQLiteImpl instance;
+    private String url;
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
     private Connection connection;
+
     /* -------------------------------------------------------------------------
     // Создание экземпляра базы данных с помощью паттерна Singleton
     --------------------------------------------------------------------------*/
-    private DataBaseSQLiteImpl(){
+    private void init() {
         try {
-            String url = "jdbc:sqlite:testDB";
             connection = DriverManager.getConnection(url);
             System.out.println("Соединение с базой данных установлено");
-        } catch (SQLException e){
+            String getAllTablesQueryCheck = SqlQueryLoader.loadSql(Constants.GET_ALL_TABLES_SQL);
+            PreparedStatement preparedStatement = connection.prepareStatement(getAllTablesQueryCheck);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                System.out.println("table name: " + resultSet.getString(1));
+            }
+        } catch (SQLException e) {
             System.err.println("Подключение не установлено: " + e.getMessage());
+            e.printStackTrace();
         }
     }
-    public static synchronized DataBaseSQLiteImpl getInstance(){
-        if (instance == null){
-            instance = new DataBaseSQLiteImpl();
-        }
-        return instance;
-    }
+
     /* -------------------------------------------------------------------------
     // Подключение к БД
     --------------------------------------------------------------------------*/
@@ -36,6 +44,7 @@ public class DataBaseSQLiteImpl implements DataBaseService{
     public Connection connectionDB() {
         return connection;
     }
+
     /* -------------------------------------------------------------------------
     // Создание таблиц в БД
     --------------------------------------------------------------------------*/
@@ -45,19 +54,19 @@ public class DataBaseSQLiteImpl implements DataBaseService{
             Statement statement = connection.createStatement();
             // Создание таблицы для торговых пар
             String createPairsTableQuery = "CREATE TABLE IF NOT EXISTS pairs ("
-                    + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                    + "id Number PRIMARY KEY AUTOINCREMENT,"
                     + "pairName TEXT NOT NULL);";
 
             statement.executeUpdate(createPairsTableQuery);
 
             // Создание таблицы для настроек
             String createConfigurationTableQuery = "CREATE TABLE IF NOT EXISTS botConfiguration ("
-                    + "pairId INTEGER REFERENCES pairs(id) PRIMARY KEY,"
+                    + "pairId Number REFERENCES pairs(id) PRIMARY KEY,"
                     + "takeProfit DOUBLE NOT NULL,"
                     + "averagingStep DOUBLE NOT NULL,"
                     + "multiplier DOUBLE NOT NULL),"
-                    + "quantityOrders INTEGER NOT NULL),"
-                    + "averagingTimer INTEGER NOT NULL),"
+                    + "quantityOrders Number NOT NULL),"
+                    + "averagingTimer Number NOT NULL),"
                     + "sumToTrade DOUBLE NOT NULL),"
                     + "startingLotVolume DOUBLE NOT NULL),"
                     + "tradingRange DOUBLE NOT NULL;";
@@ -70,6 +79,7 @@ public class DataBaseSQLiteImpl implements DataBaseService{
             throw new RuntimeException(e);
         }
     }
+
     /* -------------------------------------------------------------------------
     // Вставка в таблицу botConfiguration конфигурации для торговой пары
     --------------------------------------------------------------------------*/
@@ -147,6 +157,7 @@ public class DataBaseSQLiteImpl implements DataBaseService{
 
         return settingsList;
     }
+
     /* -------------------------------------------------------------------------
     // Получаем конкретную конфигурацию по pairId
     --------------------------------------------------------------------------*/
@@ -189,6 +200,7 @@ public class DataBaseSQLiteImpl implements DataBaseService{
 
         return botConfiguration;
     }
+
     /* -------------------------------------------------------------------------
     // Вставка в таблицу pairs валютную пару
     --------------------------------------------------------------------------*/
@@ -236,6 +248,7 @@ public class DataBaseSQLiteImpl implements DataBaseService{
 
         return pairs;
     }
+
     /* -------------------------------------------------------------------------
     // Получаем id для торговой пары по имени пары
     --------------------------------------------------------------------------*/
@@ -259,6 +272,7 @@ public class DataBaseSQLiteImpl implements DataBaseService{
         }
         return pairId;
     }
+
     /* -------------------------------------------------------------------------
     // Закрытие соединения с БД
     --------------------------------------------------------------------------*/
