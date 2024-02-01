@@ -4,14 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fe4f2d17-765e-4b5c-94b2-d67003c6b666" name="Changes" comment="Добавил обработку ошибки ввода данных(AppMainController.java) &#10;Добавил класс BinancePair.java(BinancePair.java)&#10;Добавил поле pairId для объекта(BinanceBotConfiguration.java)&#10;Обновил интерфейс (DataVaseService.java)&#10;Сделал реализацию класса (DataBaseSQLiteImpl.java)">
-      <change afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/BinanceApiMethods.java" afterDir="false" />
+    <list default="true" id="fe4f2d17-765e-4b5c-94b2-d67003c6b666" name="Changes" comment="Добавил функциональность для кнопки &quot;загрузить торговую пару&quot;, теперь подгружает доступные торговые пары(AppMainController.java) &#10;Добавил кнопку &quot;Подтвердить&quot; в окно с токенами (AppMainController.java)&#10;Добавил класс BinanceApiMethods со статическими методами для работы с API. 2 метода: connect и allPairs&#10;Рефакторинг кода в классе (BinanceTokens.java)">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/module-info.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/AppMainController.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/AppMainController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/model/BinanceTokens.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/model/BinanceTokens.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/resources/app.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/resources/app.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/BinanceBotConfiguration.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/BinanceBotConfiguration.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,29 +54,29 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.App.executor": "Run",
-    "Application.Main.executor": "Run",
-    "Maven. [org.apache.maven.plugins:maven-archetype-plugin:RELEASE:generate].executor": "Run",
-    "Maven.BinanceBots [clean].executor": "Run",
-    "Maven.BinanceBots [package].executor": "Run",
-    "Maven.TradingBots [clean].executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "master",
-    "ignore.virus.scanning.warn.message": "true",
-    "jdk.selected.JAVA_MODULE": "openjdk-21",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "D:/IntellijIDEA_Project/JavaEducationProject",
-    "onboarding.tips.debug.path": "D:/IntellijIDEA_Project/TradingBots/src/main/java/org/example/sample/Main.java",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.35172415",
-    "settings.editor.selected.configurable": "preferences.pluginManager"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.App.executor&quot;: &quot;Run&quot;,
+    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
+    &quot;Maven. [org.apache.maven.plugins:maven-archetype-plugin:RELEASE:generate].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.BinanceBots [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.BinanceBots [package].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.TradingBots [clean].executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;jdk.selected.JAVA_MODULE&quot;: &quot;openjdk-21&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/IntellijIDEA_Project/JavaEducationProject&quot;,
+    &quot;onboarding.tips.debug.path&quot;: &quot;D:/IntellijIDEA_Project/TradingBots/src/main/java/org/example/sample/Main.java&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.35172415&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
       <recent name="org.botFromSpot.guiApp.services" />
@@ -189,7 +185,15 @@
       <option name="project" value="LOCAL" />
       <updated>1706632075709</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Добавил функциональность для кнопки &quot;загрузить торговую пару&quot;, теперь подгружает доступные торговые пары(AppMainController.java) &#10;Добавил кнопку &quot;Подтвердить&quot; в окно с токенами (AppMainController.java)&#10;Добавил класс BinanceApiMethods со статическими методами для работы с API. 2 метода: connect и allPairs&#10;Рефакторинг кода в классе (BinanceTokens.java)">
+      <option name="closed" value="true" />
+      <created>1706718619398</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1706718619399</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -198,6 +202,7 @@
     <MESSAGE value="Design prototype, adding services and models" />
     <MESSAGE value="Добавил переменные для каждого поля в настройках(AppMainController.java) &#10;Обновил метод applySettingsButtonAction(AppMainController.java)&#10;Обновил модель данных в классе(BinanceBotConfiguration.java)&#10;Добавил метод &quot;loadDefaultConfig&quot; в интерфейс(ApplyConfigService.java)&#10;Имлементировал метод &quot;loadDefaultConfig&quot; в классе(AppleСonfigServiceImpl.java)" />
     <MESSAGE value="Добавил обработку ошибки ввода данных(AppMainController.java) &#10;Добавил класс BinancePair.java(BinancePair.java)&#10;Добавил поле pairId для объекта(BinanceBotConfiguration.java)&#10;Обновил интерфейс (DataVaseService.java)&#10;Сделал реализацию класса (DataBaseSQLiteImpl.java)" />
-    <option name="LAST_COMMIT_MESSAGE" value="Добавил обработку ошибки ввода данных(AppMainController.java) &#10;Добавил класс BinancePair.java(BinancePair.java)&#10;Добавил поле pairId для объекта(BinanceBotConfiguration.java)&#10;Обновил интерфейс (DataVaseService.java)&#10;Сделал реализацию класса (DataBaseSQLiteImpl.java)" />
+    <MESSAGE value="Добавил функциональность для кнопки &quot;загрузить торговую пару&quot;, теперь подгружает доступные торговые пары(AppMainController.java) &#10;Добавил кнопку &quot;Подтвердить&quot; в окно с токенами (AppMainController.java)&#10;Добавил класс BinanceApiMethods со статическими методами для работы с API. 2 метода: connect и allPairs&#10;Рефакторинг кода в классе (BinanceTokens.java)" />
+    <option name="LAST_COMMIT_MESSAGE" value="Добавил функциональность для кнопки &quot;загрузить торговую пару&quot;, теперь подгружает доступные торговые пары(AppMainController.java) &#10;Добавил кнопку &quot;Подтвердить&quot; в окно с токенами (AppMainController.java)&#10;Добавил класс BinanceApiMethods со статическими методами для работы с API. 2 метода: connect и allPairs&#10;Рефакторинг кода в классе (BinanceTokens.java)" />
   </component>
 </project>

@@ -14,6 +14,7 @@ import org.botFromSpot.guiApp.services.BinanceApiMethods;
 import org.botFromSpot.guiApp.services.BinanceBotConfiguration;
 
 import java.io.File;
+import java.text.DecimalFormat;
 
 public class AppMainController {
     @FXML
@@ -81,10 +82,6 @@ public class AppMainController {
         stage.setTitle("Выберите торговую пару");
         // ComboBox для списка торговых пар
         ComboBox<String> pairComboBox = BinanceApiMethods.allPairs();
-        // Здесь нужно добавить логику для загрузки всех возможных торговых пар с биржи Binance
-//        pairComboBox.getItems().add("BTCUSDT");
-//        pairComboBox.getItems().add("ETCUSDT");
-//        pairComboBox.getItems().add("SOLUSDT");
 
         // Кнопка для подтверждения выбора
         Button confirmButton = new Button("Подтвердить");
@@ -109,18 +106,22 @@ public class AppMainController {
     @FXML
     public void applySettingsButtonAction(ActionEvent event) {
         try {
-            startingLotVolume.setText(String.valueOf(BinanceBotConfiguration.calculateStartingLotVolume(sumToTrade, multiplier, quantityOrders)));
-            tradingRange.setText(String.valueOf(BinanceBotConfiguration.calculateTradingRange(averagingStep, quantityOrders)));
-            System.out.println(event);
-            System.out.println(takeProfit + ". Значение: " + takeProfit.getText());
-            System.out.println(averagingStep + ". Значение: " + averagingStep.getText());
-            System.out.println(multiplier + ". Значение: " + multiplier.getText());
-            System.out.println(quantityOrders + ". Значение: " + quantityOrders.getText());
-            System.out.println(averagingTimer + ". Значение: " + averagingTimer.getText());
-            System.out.println(sumToTrade + ". Значение: " + sumToTrade.getText());
-            System.out.println(startingLotVolume + ". Значение: " + startingLotVolume.getText());
-            System.out.println(tradingRange + ". Значение: " + tradingRange.getText());
-
+            if(takeProfit.getText().isEmpty() ||
+                    averagingStep.getText().isEmpty() ||
+                    multiplier.getText().isEmpty() ||
+                    quantityOrders.getText().isEmpty() ||
+                    averagingTimer.getText().isEmpty() ||
+                    sumToTrade.getText().isEmpty()) {
+                throw new IllegalArgumentException("Missing input field");
+            }
+            if(Double.parseDouble(takeProfit.getText()) <= 0 ||
+                    Double.parseDouble(averagingStep.getText()) <= 0 ||
+                    Double.parseDouble(multiplier.getText()) < 1 ||
+                    Double.parseDouble(quantityOrders.getText()) < 1 ||
+                    Double.parseDouble(averagingTimer.getText()) < 0 ||
+                    Double.parseDouble(sumToTrade.getText()) <= 0) {
+                throw new IllegalArgumentException("The field has an incorrect value");
+            }
             BinanceBotConfiguration binanceBotConfiguration = new BinanceBotConfiguration();
 
             binanceBotConfiguration.setTakeProfit(Double.parseDouble(takeProfit.getText()));
@@ -131,12 +132,21 @@ public class AppMainController {
             binanceBotConfiguration.setSumToTrade(Double.parseDouble(sumToTrade.getText()));
             binanceBotConfiguration.setStartingLotVolume(BinanceBotConfiguration.calculateStartingLotVolume(sumToTrade, multiplier, quantityOrders));
             binanceBotConfiguration.setTradingRange(BinanceBotConfiguration.calculateTradingRange(averagingStep, quantityOrders));
-        } catch (RuntimeException e) {
-            System.err.println("Произошла ошибка после нажатия кнопки 'Применить': " + e.getMessage());
+
+            DecimalFormat df = new DecimalFormat("#.###");
+            startingLotVolume.setText(String.valueOf(df.format(binanceBotConfiguration.getStartingLotVolume())));
+            tradingRange.setText(String.valueOf(df.format(binanceBotConfiguration.getTradingRange())));
+            System.out.println(event);
+            System.out.println(binanceBotConfiguration);
+
+
+        } catch (IllegalArgumentException e) {
+            System.err.println("An error occurred after clicking the 'Apply' button: " + e.getMessage());
             // Показываем диалоговое окно с сообщением об ошибке
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Ошибка ввода");
             alert.setHeaderText("Пожалуйста, проверьте правильность введенных данных");
+            alert.setContentText("Invalid values entered: " + e.getMessage());
             // Добавляем кнопку "OK" для закрытия диалогового окна
             alert.getButtonTypes().setAll(ButtonType.OK);
             // Отображаем диалоговое окно и ждем, пока пользователь его закроет
