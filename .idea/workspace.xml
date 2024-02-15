@@ -4,10 +4,24 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fe4f2d17-765e-4b5c-94b2-d67003c6b666" name="Changes" comment="Добавил функциональность для кнопки &quot;загрузить торговую пару&quot;, теперь подгружает доступные торговые пары(AppMainController.java) &#10;Добавил кнопку &quot;Подтвердить&quot; в окно с токенами (AppMainController.java)&#10;Добавил класс BinanceApiMethods со статическими методами для работы с API. 2 метода: connect и allPairs&#10;Рефакторинг кода в классе (BinanceTokens.java)">
+    <list default="true" id="fe4f2d17-765e-4b5c-94b2-d67003c6b666" name="Changes" comment="Обновил обработку ошибок для полей с настройками(AppMainController.java) &#10;Обновил метод calculateStartingLotVolume - теперь работает корректно для любых значений (BinanceBotConfiguration.java)">
+      <change afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/LoadPairController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/PairSettingController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/BinancePairDAO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/BinanceBots/src/main/resources/loadPairWindow.fxml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/BinanceBots/src/main/resources/pairSettingWindow.fxml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/BinanceBots/src/main/resources/sqlScripts/createSettingsPair.sql" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/App.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/App.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/AppMainController.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/AppMainController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/BinanceBotConfiguration.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/BinanceBotConfiguration.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/model/BinancePair.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/model/BinancePair.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/BinanceApiMethods.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/BinanceApiMethods.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/DataBaseSQLiteImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/DataBaseSQLiteImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/utils/Constants.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/utils/Constants.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/resources/app.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/resources/app.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/resources/applicationContext.xml" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/resources/applicationContext.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/resources/sqlScripts/createPairs.sql" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/resources/sqlScripts/createPairs.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/resources/testBotConfig.properties" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/resources/testBotConfig.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -18,6 +32,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Interface" />
+        <option value="FxmlFile" />
         <option value="Class" />
       </list>
     </option>
@@ -193,7 +208,15 @@
       <option name="project" value="LOCAL" />
       <updated>1706718619399</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Обновил обработку ошибок для полей с настройками(AppMainController.java) &#10;Обновил метод calculateStartingLotVolume - теперь работает корректно для любых значений (BinanceBotConfiguration.java)">
+      <option name="closed" value="true" />
+      <created>1706816185231</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1706816185231</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -203,6 +226,7 @@
     <MESSAGE value="Добавил переменные для каждого поля в настройках(AppMainController.java) &#10;Обновил метод applySettingsButtonAction(AppMainController.java)&#10;Обновил модель данных в классе(BinanceBotConfiguration.java)&#10;Добавил метод &quot;loadDefaultConfig&quot; в интерфейс(ApplyConfigService.java)&#10;Имлементировал метод &quot;loadDefaultConfig&quot; в классе(AppleСonfigServiceImpl.java)" />
     <MESSAGE value="Добавил обработку ошибки ввода данных(AppMainController.java) &#10;Добавил класс BinancePair.java(BinancePair.java)&#10;Добавил поле pairId для объекта(BinanceBotConfiguration.java)&#10;Обновил интерфейс (DataVaseService.java)&#10;Сделал реализацию класса (DataBaseSQLiteImpl.java)" />
     <MESSAGE value="Добавил функциональность для кнопки &quot;загрузить торговую пару&quot;, теперь подгружает доступные торговые пары(AppMainController.java) &#10;Добавил кнопку &quot;Подтвердить&quot; в окно с токенами (AppMainController.java)&#10;Добавил класс BinanceApiMethods со статическими методами для работы с API. 2 метода: connect и allPairs&#10;Рефакторинг кода в классе (BinanceTokens.java)" />
-    <option name="LAST_COMMIT_MESSAGE" value="Добавил функциональность для кнопки &quot;загрузить торговую пару&quot;, теперь подгружает доступные торговые пары(AppMainController.java) &#10;Добавил кнопку &quot;Подтвердить&quot; в окно с токенами (AppMainController.java)&#10;Добавил класс BinanceApiMethods со статическими методами для работы с API. 2 метода: connect и allPairs&#10;Рефакторинг кода в классе (BinanceTokens.java)" />
+    <MESSAGE value="Обновил обработку ошибок для полей с настройками(AppMainController.java) &#10;Обновил метод calculateStartingLotVolume - теперь работает корректно для любых значений (BinanceBotConfiguration.java)" />
+    <option name="LAST_COMMIT_MESSAGE" value="Обновил обработку ошибок для полей с настройками(AppMainController.java) &#10;Обновил метод calculateStartingLotVolume - теперь работает корректно для любых значений (BinanceBotConfiguration.java)" />
   </component>
 </project>

@@ -25,6 +25,13 @@ public class DataBaseSQLiteImpl implements DataBaseService {
         try {
             connection = DriverManager.getConnection(url);
             System.out.println("Соединение с базой данных установлено");
+            String createPairsTable = SqlQueryLoader.loadSql(Constants.CREATE_PAIRS_SQL);
+            PreparedStatement preparedStatementCreatePairsTable = connection.prepareStatement(createPairsTable);
+            int resultSetCreatePairsTable = preparedStatementCreatePairsTable.executeUpdate();
+            String createSettingsPairsTable = SqlQueryLoader.loadSql(Constants.CREATE_SETTINGS_PAIRS_SQL);
+            PreparedStatement preparedStatementCreateSettingsPairTable = connection.prepareStatement(createSettingsPairsTable);
+            int resultSetCreateSettingsPairTable = preparedStatementCreateSettingsPairTable.executeUpdate();
+
             String getAllTablesQueryCheck = SqlQueryLoader.loadSql(Constants.GET_ALL_TABLES_SQL);
             PreparedStatement preparedStatement = connection.prepareStatement(getAllTablesQueryCheck);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -90,10 +97,10 @@ public class DataBaseSQLiteImpl implements DataBaseService {
                     "takeProfit, " +
                     "averagingStep, " +
                     "multiplier, " +
-                    "quantityOrders" +
-                    "averagingTimer" +
-                    "sumToTrade" +
-                    "startingLotVolume" +
+                    "quantityOrders, " +
+                    "averagingTimer, " +
+                    "sumToTrade, " +
+                    "startingLotVolume, " +
                     "tradingRange) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
             try (PreparedStatement statement = connection.prepareStatement(query)) {
                 statement.setInt(1, botConfiguration.getPairId());
@@ -113,7 +120,6 @@ public class DataBaseSQLiteImpl implements DataBaseService {
             System.err.println("Ошибка при добавлении конфигурации в таблицу settings: " + e.getMessage());
         }
     }
-
     /* -------------------------------------------------------------------------
     // Получаем все конфигурации из таблицы botConfiguration
     --------------------------------------------------------------------------*/

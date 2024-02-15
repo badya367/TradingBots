@@ -11,11 +11,17 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.*;
-
+import java.util.List;
 
 
 public class BinanceApiMethods {
-    public static void connectBinance(BinanceTokens tokens){
+    private BinancePairDAO binancePairDAO;
+
+    public void setBinancePairDAO(BinancePairDAO binancePairDAO) {
+        this.binancePairDAO = binancePairDAO;
+    }
+
+    public void connectBinance(BinanceTokens tokens){
         try {
             URL url = new URL("https://testnet.binance.vision/api/v3/ping");
 
@@ -58,7 +64,7 @@ public class BinanceApiMethods {
         }
     }
 
-    public static ComboBox<String> allPairs(){
+    public ComboBox<String> allPairs(){
         ComboBox<String> comboBox = new ComboBox<>();
 
         try {
@@ -103,10 +109,10 @@ public class BinanceApiMethods {
         return comboBox;
     }
 
-    private static ObservableList<String> parseTradingPairs(String jsonResponse) {
+    private ObservableList<String> parseTradingPairs(String jsonResponse) {
         // Код для парсинга JSON и извлечения торговых пар
         ObservableList<String> pairs = FXCollections.observableArrayList();
-
+        List<String> allPairs = binancePairDAO.getAllPairsNames();
         try {
             // Преобразуем строку JSON в объект
             JSONObject json = new JSONObject(jsonResponse);
@@ -118,7 +124,9 @@ public class BinanceApiMethods {
             for (int i = 0; i < symbols.length(); i++) {
                 JSONObject symbol = symbols.getJSONObject(i);
                 String pairName = symbol.getString("symbol");
-                pairs.add(pairName);
+                if(!allPairs.contains(pairName)){
+                    pairs.add(pairName);
+                }
             }
         } catch (Exception e) {
             System.err.println(e.getMessage());

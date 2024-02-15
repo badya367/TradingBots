@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="150.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Pane prefHeight="175.0" prefWidth="300.0">
+         <children>
+            <ComboBox fx:id="pairsComboBox" layoutX="52.0" layoutY="30.0" prefHeight="25.0" prefWidth="194.0" promptText="Выберите валютную пару" />
+            <Button fx:id="goToSettingsPairBtn" layoutX="117.0" layoutY="107.0" mnemonicParsing="false" onAction="#selectSettingPair" prefHeight="25.0" prefWidth="70.0" text="Далее" />
+         </children>
+      </Pane>
+   </children>
+</AnchorPane>

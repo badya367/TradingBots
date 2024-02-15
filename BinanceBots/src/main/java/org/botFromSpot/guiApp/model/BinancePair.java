@@ -17,4 +17,9 @@ public class BinancePair {
     public void setPairName(String pairName) {
         this.pairName = pairName;
     }
+
+    @Override
+    public String toString() {
+        return pairName;
+    }
 }

@@ -26,10 +26,11 @@ public class App extends Application {
         loader.setController(appMainController);
         appMainController.setStage(primaryStage);
         URL xmlUrl = getClass().getResource("/app.fxml");
-        System.out.println(xmlUrl);
+        //System.out.println(xmlUrl);
         loader.setLocation(xmlUrl);
         Parent root = loader.load();
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
+
     }
 }

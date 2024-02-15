@@ -12,7 +12,10 @@
         </property>
     </bean>
     <bean id="appMainController" class="org.botFromSpot.guiApp.AppMainController">
-        <property name="applyConfigService" ref="applyConfigService"/>
+        <property name="binancePairDAO" ref="binancePairDAO"/>
+        <property name="binanceApiMethods" ref="binanceApiMethods"/>
+        <property name="loadPairController" ref="loadPairController"/>
+        <property name="pairSettingController" ref="pairSettingController"/>
     </bean>
     <bean id="applyConfigService" class="org.botFromSpot.guiApp.services.ApplyConfigServiceImpl">
         <property name="dataBaseService" ref="dataBaseService"/>
@@ -24,5 +27,22 @@
     </bean>
     <bean id="dataBaseService" class="org.botFromSpot.guiApp.services.DataBaseSQLiteImpl" init-method="init">
         <property name="url" value="${database.url}"/>
+    </bean>
+    <bean id="binancePairDAO" class="org.botFromSpot.guiApp.services.BinancePairDAO">
+        <property name="dataBaseService" ref="dataBaseService"/>
+    </bean>
+    <bean id="binanceApiMethods" class="org.botFromSpot.guiApp.services.BinanceApiMethods">
+        <property name="binancePairDAO" ref="binancePairDAO"/>
+    </bean>
+    <bean id="loadPairController" class="org.botFromSpot.guiApp.LoadPairController">
+        <property name="appMainController" ref="appMainController"/>
+        <property name="binancePairDAO" ref="binancePairDAO"/>
+        <property name="binanceApiMethods" ref="binanceApiMethods"/>
+        <property name="pairSettingController" ref="pairSettingController"/>
+    </bean>
+    <bean id="pairSettingController" class="org.botFromSpot.guiApp.PairSettingController">
+        <property name="appMainController" ref="appMainController"/>
+        <property name="binancePairDAO" ref="binancePairDAO"/>
+        <property name="binanceApiMethods" ref="binanceApiMethods"/>
     </bean>
 </beans>
