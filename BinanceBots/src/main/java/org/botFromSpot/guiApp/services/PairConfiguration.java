@@ -2,9 +2,7 @@ package org.botFromSpot.guiApp.services;
 
 import javafx.scene.control.TextField;
 
-import java.text.DecimalFormat;
-
-public class BinanceBotConfiguration {
+public class PairConfiguration {
     private int pairId;
     private double takeProfit;
     private double averagingStep;
@@ -17,7 +15,7 @@ public class BinanceBotConfiguration {
     //todo Add lombok Library
 
 
-    public BinanceBotConfiguration() {
+    public PairConfiguration() {
 
     }
 
@@ -103,7 +101,7 @@ public class BinanceBotConfiguration {
 
     @Override
     public String toString() {
-        return "BotConfiguration{" +
+        return "{" +
                 "pairId=" + pairId +
                 ", takeProfit=" + takeProfit +
                 ", averagingStep=" + averagingStep +

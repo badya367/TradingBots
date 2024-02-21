@@ -48,18 +48,18 @@ public class ApplyConfigServiceImpl implements ApplyConfigService {
     DataBaseService dataBaseService;
 
     @Override
-    public void applyConfig(BinanceBotConfiguration binanceBotConfiguration) {
+    public void applyConfig(PairConfiguration pairConfiguration) {
 
     }
 
     @Override
-    public BinanceBotConfiguration loadConfig() {
+    public PairConfiguration loadConfig() {
         return null;
     }
 
     @Override
-    public BinanceBotConfiguration loadDefaultConfig() {
-        BinanceBotConfiguration testBotConfiguration = new BinanceBotConfiguration();
+    public PairConfiguration loadDefaultConfig() {
+        PairConfiguration testBotConfiguration = new PairConfiguration();
         System.out.println(takeProfit);
         testBotConfiguration.setTakeProfit(takeProfit);
         testBotConfiguration.setAveragingStep(averagingStep);

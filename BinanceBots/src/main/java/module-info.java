@@ -6,8 +6,12 @@ module BinanceBots {
     requires org.json;
     requires spring.context;
     requires spring.core;
+    requires binance.connector.java;
+    requires org.slf4j;
     opens org.botFromSpot.guiApp to javafx.fxml;
     exports org.botFromSpot.guiApp;
     opens org.botFromSpot.guiApp.services to spring.core;
     exports org.botFromSpot.guiApp.services;
+    exports org.botFromSpot.guiApp.services.binanceTestNetServices;
+    opens org.botFromSpot.guiApp.services.binanceTestNetServices to spring.core;
 }

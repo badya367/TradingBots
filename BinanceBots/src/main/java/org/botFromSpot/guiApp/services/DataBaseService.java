@@ -10,11 +10,11 @@ public interface DataBaseService {
 
     void createDB();
 
-    void insertBotConfiguration(BinanceBotConfiguration botConfiguration);
+    void insertBotConfiguration(PairConfiguration pairConfiguration);
 
-    List<BinanceBotConfiguration> readAllConfiguration();
+    List<PairConfiguration> readAllConfiguration();
 
-    BinanceBotConfiguration readConfigurationForPair(int pairId);
+    PairConfiguration readConfigurationForPair(int pairId);
 
     void insertPair(String pairName);
 

@@ -7,7 +7,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.botFromSpot.guiApp.model.BinancePair;
 import org.botFromSpot.guiApp.services.BinanceApiMethods;
-import org.botFromSpot.guiApp.services.BinanceBotConfiguration;
+import org.botFromSpot.guiApp.services.PairConfiguration;
 import org.botFromSpot.guiApp.services.BinancePairDAO;
 
 import java.io.File;
@@ -65,32 +65,42 @@ public class PairSettingController {
                     Double.parseDouble(sumToTrade.getText()) <= 0) {
                 throw new IllegalArgumentException("The field has an incorrect value");
             }
-            BinanceBotConfiguration binanceBotConfiguration = new BinanceBotConfiguration();
+            PairConfiguration pairConfiguration = new PairConfiguration();
             System.out.println(selectedPairsList.getSelectionModel().getSelectedItem());
             BinancePair selectedPair = selectedPairsList.getSelectionModel().getSelectedItem();
-            binanceBotConfiguration.setPairId(binancePairDAO.getPairIdByPairName(selectedPair.getPairName()));
-            binanceBotConfiguration.setTakeProfit(Double.parseDouble(takeProfit.getText()));
-            binanceBotConfiguration.setAveragingStep(Double.parseDouble(averagingStep.getText()));
-            binanceBotConfiguration.setMultiplier(Double.parseDouble(multiplier.getText()));
-            binanceBotConfiguration.setQuantityOrders(Integer.parseInt(quantityOrders.getText()));
-            binanceBotConfiguration.setAveragingTimer(Integer.parseInt(averagingTimer.getText()));
-            binanceBotConfiguration.setSumToTrade(Double.parseDouble(sumToTrade.getText()));
-            binanceBotConfiguration.setStartingLotVolume(BinanceBotConfiguration.calculateStartingLotVolume(sumToTrade, multiplier, quantityOrders));
-            binanceBotConfiguration.setTradingRange(BinanceBotConfiguration.calculateTradingRange(averagingStep, quantityOrders));
+            pairConfiguration.setPairId(binancePairDAO.getPairIdByPairName(selectedPair.getPairName()));
+            pairConfiguration.setTakeProfit(Double.parseDouble(takeProfit.getText()));
+            pairConfiguration.setAveragingStep(Double.parseDouble(averagingStep.getText()));
+            pairConfiguration.setMultiplier(Double.parseDouble(multiplier.getText()));
+            pairConfiguration.setQuantityOrders(Integer.parseInt(quantityOrders.getText()));
+            pairConfiguration.setAveragingTimer(Integer.parseInt(averagingTimer.getText()));
+            pairConfiguration.setSumToTrade(Double.parseDouble(sumToTrade.getText()));
+            pairConfiguration.setStartingLotVolume(PairConfiguration.calculateStartingLotVolume(sumToTrade, multiplier, quantityOrders));
+            pairConfiguration.setTradingRange(PairConfiguration.calculateTradingRange(averagingStep, quantityOrders));
 
             DecimalFormat df = new DecimalFormat("#.###");
-            startingLotVolume.setText(String.valueOf(df.format(binanceBotConfiguration.getStartingLotVolume())));
-            tradingRange.setText(String.valueOf(df.format(binanceBotConfiguration.getTradingRange())));
+            startingLotVolume.setText(String.valueOf(df.format(pairConfiguration.getStartingLotVolume())));
+            tradingRange.setText(String.valueOf(df.format(pairConfiguration.getTradingRange())));
             System.out.println(event);
-            System.out.println(binanceBotConfiguration);
+            System.out.println(pairConfiguration);
+
             if (isUpdatingConfig) {
-                // Вызывается из AppMainController, обновляем существующую запись
-                binancePairDAO.updateBotConfiguration(binanceBotConfiguration);
+
+                // Вызывается из AppMainController, обновляем существующую запись и изменяем зарезервированный баланс
+                double oldSumToTradeInPair = binancePairDAO.getConfigurationForPair(binancePairDAO.getPairIdByPairName(selectedPair.getPairName())).getSumToTrade();
+                appMainController.setReservedBalance_var(appMainController.getReservedBalance_var()-oldSumToTradeInPair);
+                appMainController.reservedBalance.setText(String.valueOf(appMainController.getReservedBalance_var()));
+
+                binancePairDAO.updateBotConfiguration(pairConfiguration);
+                appMainController.setReservedBalance_var(appMainController.getReservedBalance_var()+ pairConfiguration.getSumToTrade());
+                appMainController.reservedBalance.setText(String.valueOf(appMainController.getReservedBalance_var()));
+
             } else {
-                // Вызывается из LoadPairController, создаем новую запись
-                binancePairDAO.addBotConfiguration(binanceBotConfiguration);
+                // Вызывается из LoadPairController, создаем новую запись и изменяем зарезервированный баланс
+                binancePairDAO.addBotConfiguration(pairConfiguration);
+                appMainController.setReservedBalance_var(appMainController.getReservedBalance_var()+ pairConfiguration.getSumToTrade());
+                appMainController.reservedBalance.setText(String.valueOf(appMainController.getReservedBalance_var()));
             }
-            binancePairDAO.addBotConfiguration(binanceBotConfiguration);
             ((Stage) takeProfit.getScene().getWindow()).close();
 
 
@@ -124,7 +134,7 @@ public class PairSettingController {
         File file = fileChooser.showOpenDialog(stage);
         System.out.println("ПОКА ЧТО ЗАГЛУШКА: " + event);  //Файл не открывается
     }
-    public void fillFields(BinanceBotConfiguration botConfiguration){
+    public void fillFields(PairConfiguration botConfiguration){
         if (botConfiguration != null){
             takeProfit.setText(String.valueOf(botConfiguration.getTakeProfit()));
             averagingStep.setText(String.valueOf(botConfiguration.getAveragingStep()));

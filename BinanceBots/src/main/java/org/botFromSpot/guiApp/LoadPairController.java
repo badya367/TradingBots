@@ -9,18 +9,15 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
-import javafx.scene.control.MultipleSelectionModel;
 import javafx.stage.Stage;
 import org.botFromSpot.guiApp.model.BinancePair;
-import org.botFromSpot.guiApp.services.ApplyConfigService;
 import org.botFromSpot.guiApp.services.BinanceApiMethods;
 import org.botFromSpot.guiApp.services.BinancePairDAO;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
 
-public class LoadPairController {
+public class LoadPairController{
 
     @FXML
     private ComboBox<String> pairsComboBox;
@@ -38,9 +35,11 @@ public class LoadPairController {
 
     @FXML
     public void initialize() {
+
         ComboBox<String> pairsComboBoxFromMethod = binanceApiMethods.allPairs();
         ObservableList<String> allPairs = pairsComboBoxFromMethod.getItems();
         pairsComboBox.getItems().addAll(allPairs);
+
     }
     @FXML
     public void selectSettingPair(ActionEvent event) {

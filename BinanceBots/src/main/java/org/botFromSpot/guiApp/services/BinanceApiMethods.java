@@ -4,6 +4,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ComboBox;
 import org.botFromSpot.guiApp.model.BinanceTokens;
+import org.botFromSpot.guiApp.services.binanceTestNetServices.TestNetSpotClient;
+import org.botFromSpot.guiApp.services.binanceTestNetServices.TestNetSpotClientImpl;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -11,7 +13,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.*;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class BinanceApiMethods {
@@ -21,7 +25,7 @@ public class BinanceApiMethods {
         this.binancePairDAO = binancePairDAO;
     }
 
-    public void connectBinance(BinanceTokens tokens){
+    public void connectBinance(BinanceTokens tokens) {
         try {
             URL url = new URL("https://testnet.binance.vision/api/v3/ping");
 
@@ -63,8 +67,17 @@ public class BinanceApiMethods {
             System.err.println(e.getMessage());
         }
     }
-
-    public ComboBox<String> allPairs(){
+    public double getAccountBalanceForTestNet(BinanceTokens tokens){
+        Map<String, Object> parameters = new LinkedHashMap<>();
+        //SpotClient client = new SpotClientImpl(tokens.getApiKey(),tokens.getSecretKey());
+        //System.out.println(client.createWallet().walletBalance(parameters));
+        //Закоменчено для получения баланса НЕ тестовой сети
+        TestNetSpotClient client = new TestNetSpotClientImpl(tokens.getApiKey(),tokens.getSecretKey());
+        String jsonAnswerAccountInfo = client.createWallet().walletBalance(parameters);
+        double balance = client.createWallet().getAvailableBalanceInUSDT(jsonAnswerAccountInfo,"USDT");
+        return balance;
+    }
+    public ComboBox<String> allPairs() {
         ComboBox<String> comboBox = new ComboBox<>();
 
         try {
@@ -109,6 +122,7 @@ public class BinanceApiMethods {
         return comboBox;
     }
 
+
     private ObservableList<String> parseTradingPairs(String jsonResponse) {
         // Код для парсинга JSON и извлечения торговых пар
         ObservableList<String> pairs = FXCollections.observableArrayList();
@@ -124,7 +138,7 @@ public class BinanceApiMethods {
             for (int i = 0; i < symbols.length(); i++) {
                 JSONObject symbol = symbols.getJSONObject(i);
                 String pairName = symbol.getString("symbol");
-                if(!allPairs.contains(pairName)){
+                if (!allPairs.contains(pairName)) {
                     pairs.add(pairName);
                 }
             }
@@ -133,7 +147,5 @@ public class BinanceApiMethods {
         }
 
         return pairs;
-        // Здесь я просто возвращаю заглушку, чтобы не было ошибки компиляции
-        //return FXCollections.observableArrayList("BTC/USDT", "ETH/USDT", "BNB/USDT");
     }
 }

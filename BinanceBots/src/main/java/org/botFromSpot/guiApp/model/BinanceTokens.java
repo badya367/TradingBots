@@ -1,7 +1,7 @@
 package org.botFromSpot.guiApp.model;
 //Тестовая сеть
-//bwKtUIBVFBkRktAieumDnDwb7YP9DTOACR9SOgz4yP7k7DOrqOSAgjI6fB3Emjkv
-//Qvu0Gfdn0m4OXm5RKI9vqPf8XAe3TIBrxqN8yvZgKoVShAmpd9qrFTP3pJ1o9TmA
+//TLD4kVp4z7X0dMP94MKW7pzLSo2D8wCt3Ga9KvvqBZZUf8tjBPeO75EDsKtAkGYf
+//koQMdHB23EKkaQsJYtOVM8WG9TVMYSVZ00DVYUBQqXYSj9LHxUgRGgayXPLZ2Hmn
 public class BinanceTokens {
     private final String apiKey;
     private final String secretKey;

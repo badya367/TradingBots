@@ -88,10 +88,10 @@ public class DataBaseSQLiteImpl implements DataBaseService {
     }
 
     /* -------------------------------------------------------------------------
-    // Вставка в таблицу botConfiguration конфигурации для торговой пары
+    // Вставка в таблицу pairConfiguration конфигурации для торговой пары
     --------------------------------------------------------------------------*/
     @Override
-    public void insertBotConfiguration(BinanceBotConfiguration botConfiguration) {
+    public void insertBotConfiguration(PairConfiguration pairConfiguration) {
         try {
             String query = "INSERT INTO settings (pairId, " +
                     "takeProfit, " +
@@ -103,18 +103,18 @@ public class DataBaseSQLiteImpl implements DataBaseService {
                     "startingLotVolume, " +
                     "tradingRange) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
             try (PreparedStatement statement = connection.prepareStatement(query)) {
-                statement.setInt(1, botConfiguration.getPairId());
-                statement.setDouble(2, botConfiguration.getTakeProfit());
-                statement.setDouble(3, botConfiguration.getAveragingStep());
-                statement.setDouble(4, botConfiguration.getMultiplier());
-                statement.setInt(5, botConfiguration.getQuantityOrders());
-                statement.setInt(6, botConfiguration.getAveragingTimer());
-                statement.setDouble(7, botConfiguration.getSumToTrade());
-                statement.setDouble(8, botConfiguration.getStartingLotVolume());
-                statement.setDouble(9, botConfiguration.getTradingRange());
+                statement.setInt(1, pairConfiguration.getPairId());
+                statement.setDouble(2, pairConfiguration.getTakeProfit());
+                statement.setDouble(3, pairConfiguration.getAveragingStep());
+                statement.setDouble(4, pairConfiguration.getMultiplier());
+                statement.setInt(5, pairConfiguration.getQuantityOrders());
+                statement.setInt(6, pairConfiguration.getAveragingTimer());
+                statement.setDouble(7, pairConfiguration.getSumToTrade());
+                statement.setDouble(8, pairConfiguration.getStartingLotVolume());
+                statement.setDouble(9, pairConfiguration.getTradingRange());
 
                 statement.executeUpdate();
-                System.out.println("Конфигурация для pairId " + botConfiguration.getPairId() + " добавлена в таблицу settings.");
+                System.out.println("Конфигурация для pairId " + pairConfiguration.getPairId() + " добавлена в таблицу settings.");
             }
         } catch (SQLException e) {
             System.err.println("Ошибка при добавлении конфигурации в таблицу settings: " + e.getMessage());
@@ -124,8 +124,8 @@ public class DataBaseSQLiteImpl implements DataBaseService {
     // Получаем все конфигурации из таблицы botConfiguration
     --------------------------------------------------------------------------*/
     @Override
-    public List<BinanceBotConfiguration> readAllConfiguration() {
-        List<BinanceBotConfiguration> settingsList = new ArrayList<>();
+    public List<PairConfiguration> readAllConfiguration() {
+        List<PairConfiguration> settingsList = new ArrayList<>();
 
         try {
             String query = "SELECT * FROM botConfiguration;";
@@ -143,7 +143,7 @@ public class DataBaseSQLiteImpl implements DataBaseService {
                     double startingLotVolume = resultSet.getDouble("startingLotVolume");
                     double tradingRange = resultSet.getDouble("tradingRange");
 
-                    BinanceBotConfiguration botConfiguration = new BinanceBotConfiguration();
+                    PairConfiguration botConfiguration = new PairConfiguration();
                     botConfiguration.setPairId(pairId);
                     botConfiguration.setTakeProfit(takeProfit);
                     botConfiguration.setAveragingStep(averagingStep);
@@ -168,8 +168,8 @@ public class DataBaseSQLiteImpl implements DataBaseService {
     // Получаем конкретную конфигурацию по pairId
     --------------------------------------------------------------------------*/
     @Override
-    public BinanceBotConfiguration readConfigurationForPair(int pairId) {
-        BinanceBotConfiguration botConfiguration = null;
+    public PairConfiguration readConfigurationForPair(int pairId) {
+        PairConfiguration botConfiguration = null;
 
         try {
             String query = "SELECT * FROM settings WHERE pairId = ?;";
@@ -187,7 +187,7 @@ public class DataBaseSQLiteImpl implements DataBaseService {
                         double startingLotVolume = resultSet.getDouble("startingLotVolume");
                         double tradingRange = resultSet.getDouble("tradingRange");
 
-                        botConfiguration = new BinanceBotConfiguration();
+                        botConfiguration = new PairConfiguration();
                         botConfiguration.setPairId(pairId);
                         botConfiguration.setTakeProfit(takeProfit);
                         botConfiguration.setAveragingStep(averagingStep);

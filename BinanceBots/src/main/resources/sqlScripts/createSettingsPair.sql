@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS settings (
-    pairId INTEGER REFERENCES pairs(id) PRIMARY KEY,
+    settings_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    pairId INTEGER REFERENCES pairs(id),
     takeProfit DOUBLE NOT NULL,
     averagingStep DOUBLE NOT NULL,
     multiplier DOUBLE NOT NULL,

@@ -1,7 +1,7 @@
 package org.botFromSpot.guiApp.services;
 
 public interface ApplyConfigService {
-    void applyConfig(BinanceBotConfiguration binanceBotConfiguration);
-    BinanceBotConfiguration loadConfig();
-    BinanceBotConfiguration loadDefaultConfig();
+    void applyConfig(PairConfiguration pairConfiguration);
+    PairConfiguration loadConfig();
+    PairConfiguration loadDefaultConfig();
 }

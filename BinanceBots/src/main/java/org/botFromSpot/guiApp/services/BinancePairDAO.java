@@ -34,7 +34,7 @@ public class BinancePairDAO {
     /* -------------------------------------------------------------------------
     // Вставка в таблицу botConfiguration конфигурации для торговой пары
     --------------------------------------------------------------------------*/
-    public void addBotConfiguration(BinanceBotConfiguration botConfiguration) {
+    public void addBotConfiguration(PairConfiguration botConfiguration) {
         Connection connection = dataBaseService.connectionDB();
         try {
             String query = "INSERT INTO settings (pairId, " +
@@ -67,7 +67,7 @@ public class BinancePairDAO {
     /* -------------------------------------------------------------------------
     // Изменение botConfiguration конфигурации для торговой пары по pairId
     --------------------------------------------------------------------------*/
-    public void updateBotConfiguration(BinanceBotConfiguration botConfiguration) {
+    public void updateBotConfiguration(PairConfiguration botConfiguration) {
         Connection connection = dataBaseService.connectionDB();
         try {
             String query = "UPDATE settings SET takeProfit=?, averagingStep=?, multiplier=?, " +
@@ -137,6 +137,29 @@ public class BinancePairDAO {
         return allPairs;
     }
     /* -------------------------------------------------------------------------
+    // Получаем конкретную BinancePair по имени пары
+    --------------------------------------------------------------------------*/
+    public BinancePair getBinancePairByPairName(String pairName) {
+        BinancePair pair = new BinancePair();
+        Connection connection = dataBaseService.connectionDB();
+        try {
+            String query = "SELECT * FROM pairs WHERE pairName = ?;";
+            try (PreparedStatement statement = connection.prepareStatement(query)){
+                statement.setString(1, pairName);
+                try (ResultSet resultSet = statement.executeQuery()){
+                    if(resultSet.next()) {
+
+                        pair.setId(resultSet.getInt("id"));
+                        pair.setPairName(resultSet.getString("pairName"));
+                    }
+                }
+            }
+        } catch (SQLException e){
+            System.err.println("Ошибка при получении BinancePair по имени" + e.getMessage());
+        }
+        return pair;
+    }
+    /* -------------------------------------------------------------------------
     // Получаем id для торговой пары по имени пары
     --------------------------------------------------------------------------*/
     public int getPairIdByPairName(String pairName) {
@@ -158,11 +181,12 @@ public class BinancePairDAO {
         }
         return pairId;
     }
+
     /* -------------------------------------------------------------------------
     // Получаем конкретную конфигурацию по pairId
     --------------------------------------------------------------------------*/
-    public BinanceBotConfiguration getConfigurationForPair(int pairId) {
-        BinanceBotConfiguration botConfiguration = null;
+    public PairConfiguration getConfigurationForPair(int pairId) {
+        PairConfiguration botConfiguration = null;
         Connection connection = dataBaseService.connectionDB();
         try {
             String query = "SELECT * FROM settings WHERE pairId = ?;";
@@ -180,7 +204,7 @@ public class BinancePairDAO {
                         double startingLotVolume = resultSet.getDouble("startingLotVolume");
                         double tradingRange = resultSet.getDouble("tradingRange");
 
-                        botConfiguration = new BinanceBotConfiguration();
+                        botConfiguration = new PairConfiguration();
                         botConfiguration.setPairId(pairId);
                         botConfiguration.setTakeProfit(takeProfit);
                         botConfiguration.setAveragingStep(averagingStep);

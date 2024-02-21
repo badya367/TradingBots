@@ -1,5 +1,6 @@
 package org.botFromSpot.guiApp;
 
+import com.binance.connector.client.exceptions.BinanceClientException;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -7,23 +8,16 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.VBox;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.botFromSpot.guiApp.model.BinancePair;
 import org.botFromSpot.guiApp.model.BinanceTokens;
+import org.botFromSpot.guiApp.model.BotConfiguration;
 import org.botFromSpot.guiApp.services.*;
-import org.springframework.context.support.GenericXmlApplicationContext;
-import org.springframework.util.CollectionUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.text.DecimalFormat;
-import java.util.Collections;
 import java.util.List;
 
 public class AppMainController {
@@ -37,6 +31,11 @@ public class AppMainController {
     @FXML
     public ListView<BinancePair> selectedPairsList;
 
+    @FXML
+    public Label balanceAcc;
+    @FXML
+    public Label reservedBalance;
+    private double reservedBalance_var = 0;
     //--------------------------------------------------------
     //Переменные связанные с токенами биржи
     @FXML
@@ -69,17 +68,31 @@ public class AppMainController {
     @FXML
     public void initialize() {
         testTextOutput.setText("Loaded");
+        balanceAcc.setText("-");
+
         ObservableList<BinancePair> items = selectedPairsList.getItems();
         List<BinancePair> allPairs = binancePairDAO.getAllPairs();
         for (BinancePair pair : allPairs) {
             items.add(pair);
+            if (pair != null){
+                if(binancePairDAO.getConfigurationForPair(pair.getId()) != null){
+                    reservedBalance_var += binancePairDAO.getConfigurationForPair(pair.getId()).getSumToTrade();
+                }
+            }
+
         }
+
+        reservedBalance.setText(String.valueOf(reservedBalance_var));
     }
 
     @FXML
     public void loadPairButtonAction(ActionEvent event) {
         // Новое окно после нажатия на кнопку
         try {
+            if(apiKey.getText().isEmpty() || secretKey.getText().isEmpty()){
+                throw new IllegalArgumentException("Пустые значения ключей");
+            }
+            pairSettingController.setUpdatingConfig(false);
             FXMLLoader loader = new FXMLLoader();
             URL xmlUrl = getClass().getResource("/loadPairWindow.fxml");
             loader.setController(loadPairController);
@@ -89,7 +102,15 @@ public class AppMainController {
             loadPair.setTitle("Загрузка валютной пары");
             loadPair.setScene(new Scene(root));
             loadPair.show();
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e){
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Ошибка запроса");
+            alert.setHeaderText("Пожалуйста укажите Api и Secret Key");
+            alert.setContentText("Invalid values entered: " + e.getMessage());
+            alert.getButtonTypes().setAll(ButtonType.OK);
+            alert.showAndWait();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -112,6 +133,8 @@ public class AppMainController {
         if (selectedPair != null) {
             if (contextMenu == null) {
                 contextMenu = new ContextMenu();
+                MenuItem startBot = new MenuItem("Запустить");
+                startBot.setOnAction(e -> startBotAction());
 
                 MenuItem editItem = new MenuItem("Изменить");
                 editItem.setOnAction(e -> editItemAction());
@@ -119,7 +142,7 @@ public class AppMainController {
                 MenuItem deleteItem = new MenuItem("Удалить");
                 deleteItem.setOnAction(e -> deleteItemAction());
 
-                contextMenu.getItems().addAll(editItem, deleteItem);
+                contextMenu.getItems().addAll(startBot, editItem, deleteItem);
 
                 // Добавляем слушатель для скрытия меню
                 contextMenu.setOnHidden(e -> contextMenu = null);
@@ -129,8 +152,24 @@ public class AppMainController {
         }
     }
     @FXML
+    public void startBotAction() {
+        BinancePair pair = binancePairDAO.getBinancePairByPairName(selectedPairsList
+                .getSelectionModel()
+                .getSelectedItem()
+                .getPairName());
+
+        PairConfiguration pairConfig = binancePairDAO.getConfigurationForPair(pair.getId());
+
+        BotConfiguration botRequest = new BotConfiguration(pair,pairConfig);
+        BotProvider botProvider = new BotProvider();
+        botProvider.createBot(botRequest);
+        botProvider.stopBot(botRequest);
+
+
+    }
+    @FXML
     public void editItemAction() {
-        BinanceBotConfiguration editPair = binancePairDAO
+        PairConfiguration editPair = binancePairDAO
                 .getConfigurationForPair(binancePairDAO
                 .getPairIdByPairName(selectedPairsList
                         .getSelectionModel()
@@ -154,20 +193,34 @@ public class AppMainController {
         }
 
     }
-
     @FXML
     public void deleteItemAction() {
-        binancePairDAO.deleteBotConfiguration(binancePairDAO
-                .getPairIdByPairName(selectedPairsList
-                        .getSelectionModel()
-                        .getSelectedItem()
-                        .getPairName()));
-        binancePairDAO.deletePair(binancePairDAO
-                .getPairIdByPairName(selectedPairsList
-                        .getSelectionModel()
-                        .getSelectedItem()
-                        .getPairName()));
-        selectedPairsList.getItems().remove(selectedPairsList.getSelectionModel().getSelectedItem());
+        // Получение выбранной пары
+        BinancePair selectedPair = selectedPairsList.getSelectionModel().getSelectedItem();
+
+        if (selectedPair == null) {
+            return;
+        }
+        // Создание всплывающего окна с подтверждением
+        Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmationAlert.setTitle("Подтверждение удаления");
+        confirmationAlert.setHeaderText(null);
+        confirmationAlert.setContentText("Вы уверены, что хотите удалить пару " + selectedPair.getPairName() + "?");
+
+        confirmationAlert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+
+        ButtonType userResponse = confirmationAlert.showAndWait().orElse(ButtonType.NO);
+
+
+        if (userResponse == ButtonType.YES) {
+
+            int pairId = binancePairDAO.getPairIdByPairName(selectedPair.getPairName());
+
+            binancePairDAO.deleteBotConfiguration(pairId);
+            binancePairDAO.deletePair(pairId);
+
+            selectedPairsList.getItems().remove(selectedPair);
+        }
     }
     @FXML
     public void emptyFieldsForConfig() {
@@ -180,7 +233,9 @@ public class AppMainController {
             BinanceTokens tokens = new BinanceTokens(apiKey.getText(), secretKey.getText());
             System.out.println("Api Key = " + tokens.getApiKey() + "\nSecret key = " + tokens.getSecretKey()); //Потом нужно будет убрать эту строчку
             binanceApiMethods.connectBinance(tokens);
-        } catch (IllegalArgumentException e) {
+            balanceAcc.setText(String.valueOf(binanceApiMethods.getAccountBalanceForTestNet(tokens)));
+
+        } catch (IllegalArgumentException | BinanceClientException e) {
             System.err.println("An error occurred after clicking the 'Confirm' button:" + e.getMessage());
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Ошибка ввода");
@@ -201,5 +256,13 @@ public class AppMainController {
     public void selectPairInPairsList(BinancePair pairForSelect){
         MultipleSelectionModel<BinancePair> selectionModel = selectedPairsList.getSelectionModel();
         selectionModel.select(pairForSelect);
+    }
+
+    public double getReservedBalance_var() {
+        return reservedBalance_var;
+    }
+
+    public void setReservedBalance_var(double reservedBalance_var) {
+        this.reservedBalance_var = reservedBalance_var;
     }
 }

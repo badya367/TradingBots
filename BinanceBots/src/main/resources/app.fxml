@@ -18,7 +18,7 @@
                           <content>
                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="426.0" prefWidth="200.0">
                                  <children>
-                                     <ListView fx:id="selectedPairsList" layoutY="2.0" onMouseClicked="#listViewMouseClicked" prefHeight="423.0" prefWidth="200.0"/>
+                                     <ListView fx:id="selectedPairsList" layoutY="2.0" onMouseClicked="#listViewMouseClicked" prefHeight="423.0" prefWidth="200.0" />
                                  </children>
 
                             </AnchorPane>
@@ -27,6 +27,38 @@
                         <HBox layoutX="17.0" layoutY="14.0" prefHeight="25.0" prefWidth="567.0">
                            <children>
                               <Button fx:id="loadPairButton" mnemonicParsing="false" onAction="#loadPairButtonAction" text="Загрузить валютную пару" />
+                              <HBox prefHeight="25.0" prefWidth="245.0">
+                                 <children>
+                                    <HBox prefHeight="25.0" prefWidth="94.0" />
+                                    <HBox prefHeight="25.0" prefWidth="151.0">
+                                       <children>
+                                          <HBox prefHeight="25.0" prefWidth="67.0">
+                                             <children>
+                                                <Label alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="63.0" text="USDT:" />
+                                             </children>
+                                          </HBox>
+                                          <HBox prefHeight="25.0" prefWidth="92.0">
+                                             <children>
+                                                <Label fx:id="balanceAcc" alignment="CENTER" prefHeight="26.0" prefWidth="88.0" />
+                                             </children>
+                                          </HBox>
+                                       </children>
+                                    </HBox>
+                                 </children></HBox>
+                              <HBox prefHeight="25.0" prefWidth="166.0">
+                                 <children>
+                                    <HBox prefHeight="25.0" prefWidth="79.0">
+                                       <children>
+                                          <Label alignment="CENTER_RIGHT" prefHeight="26.0" prefWidth="79.0" text="Reserved:" />
+                                       </children>
+                                    </HBox>
+                                    <HBox prefHeight="25.0" prefWidth="88.0">
+                                       <children>
+                                          <Label fx:id="reservedBalance" alignment="CENTER" prefHeight="27.0" prefWidth="89.0" />
+                                       </children>
+                                    </HBox>
+                                 </children>
+                              </HBox>
                            </children>
                         </HBox>
                         <ScrollPane layoutX="221.0" layoutY="39.0" prefHeight="443.0" prefWidth="368.0">
