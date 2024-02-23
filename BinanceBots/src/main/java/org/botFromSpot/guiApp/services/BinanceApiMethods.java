@@ -1,5 +1,9 @@
 package org.botFromSpot.guiApp.services;
 
+import com.binance.connector.client.SpotClient;
+import com.binance.connector.client.exceptions.BinanceClientException;
+import com.binance.connector.client.exceptions.BinanceConnectorException;
+import com.binance.connector.client.impl.SpotClientImpl;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ComboBox;
@@ -122,7 +126,28 @@ public class BinanceApiMethods {
         return comboBox;
     }
 
-
+    public boolean getOpenOrders(BinanceTokens tokens, String pairName){
+        Map<String, Object> parameters = new LinkedHashMap<>();
+        SpotClient spotClient = new SpotClientImpl(tokens.getApiKey(),tokens.getSecretKey(), "https://testnet.binance.vision");
+        parameters.put("symbol", pairName);
+        try {
+            String result = spotClient.createTrade().getOpenOrders(parameters);
+            System.out.println(result);
+            if(!result.isEmpty()){
+                return true;
+            }
+            else {return false;}
+        } catch (BinanceConnectorException e) {
+            System.err.println((String) String.format("fullErrMessage: %s", e.getMessage()));
+        } catch (BinanceClientException e) {
+            System.err.println((String) String.format("fullErrMessage: %s \nerrMessage: %s \nerrCode: %d \nHTTPStatusCode: %d",
+                    e.getMessage(), e.getErrMsg(), e.getErrorCode(), e.getHttpStatusCode()));
+        }
+        return false;
+    }
+    //-----------------------------------------------------------
+    //Ниже необходимые приватные методы для работы этого класса  |
+    //-----------------------------------------------------------
     private ObservableList<String> parseTradingPairs(String jsonResponse) {
         // Код для парсинга JSON и извлечения торговых пар
         ObservableList<String> pairs = FXCollections.observableArrayList();

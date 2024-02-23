@@ -16,6 +16,7 @@
         <property name="binanceApiMethods" ref="binanceApiMethods"/>
         <property name="loadPairController" ref="loadPairController"/>
         <property name="pairSettingController" ref="pairSettingController"/>
+        <property name="botProvider" ref="botProvider"/>
     </bean>
     <bean id="applyConfigService" class="org.botFromSpot.guiApp.services.ApplyConfigServiceImpl">
         <property name="dataBaseService" ref="dataBaseService"/>
@@ -41,6 +42,11 @@
         <property name="pairSettingController" ref="pairSettingController"/>
     </bean>
     <bean id="pairSettingController" class="org.botFromSpot.guiApp.PairSettingController">
+        <property name="appMainController" ref="appMainController"/>
+        <property name="binancePairDAO" ref="binancePairDAO"/>
+        <property name="binanceApiMethods" ref="binanceApiMethods"/>
+    </bean>
+    <bean id="botProvider" class="org.botFromSpot.guiApp.services.BotProvider">
         <property name="appMainController" ref="appMainController"/>
         <property name="binancePairDAO" ref="binancePairDAO"/>
         <property name="binanceApiMethods" ref="binanceApiMethods"/>

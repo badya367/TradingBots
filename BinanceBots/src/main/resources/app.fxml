@@ -100,11 +100,11 @@
                                     </HBox>
                                     <HBox prefHeight="42.0" prefWidth="450.0">
                                        <children>
-                                          <TextField fx:id="apiKey" alignment="CENTER" prefHeight="42.0" prefWidth="450.0" promptText="Введите свой API key">
+                                          <PasswordField fx:id="apiKey" alignment="CENTER" prefHeight="45.0" prefWidth="450.0" promptText="Введите свой Api key">
                                              <font>
                                                 <Font size="16.0" />
                                              </font>
-                                          </TextField>
+                                          </PasswordField>
                                        </children>
                                     </HBox>
                                  </children>
@@ -122,11 +122,11 @@
                                     </HBox>
                                     <HBox prefHeight="42.0" prefWidth="451.0">
                                        <children>
-                                          <TextField fx:id="secretKey" alignment="CENTER" prefHeight="42.0" prefWidth="450.0" promptText="Введите свой Secret key">
+                                          <PasswordField fx:id="secretKey" alignment="CENTER" prefHeight="45.0" prefWidth="450.0" promptText="Введите свой Secret Key">
                                              <font>
                                                 <Font size="16.0" />
                                              </font>
-                                          </TextField>
+                                          </PasswordField>
                                        </children>
                                     </HBox>
                                  </children>

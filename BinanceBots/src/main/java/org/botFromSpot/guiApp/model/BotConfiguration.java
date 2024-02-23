@@ -16,6 +16,15 @@ public class BotConfiguration {
         this.configuration = configuration;
     }
 
+
+    public BinancePair getPair() {
+        return pair;
+    }
+
+    public PairConfiguration getConfiguration() {
+        return configuration;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

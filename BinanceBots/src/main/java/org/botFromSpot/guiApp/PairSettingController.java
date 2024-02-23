@@ -85,21 +85,11 @@ public class PairSettingController {
             System.out.println(pairConfiguration);
 
             if (isUpdatingConfig) {
-
-                // Вызывается из AppMainController, обновляем существующую запись и изменяем зарезервированный баланс
-                double oldSumToTradeInPair = binancePairDAO.getConfigurationForPair(binancePairDAO.getPairIdByPairName(selectedPair.getPairName())).getSumToTrade();
-                appMainController.setReservedBalance_var(appMainController.getReservedBalance_var()-oldSumToTradeInPair);
-                appMainController.reservedBalance.setText(String.valueOf(appMainController.getReservedBalance_var()));
-
+                // Вызывается из AppMainController, обновляем существующую запись
                 binancePairDAO.updateBotConfiguration(pairConfiguration);
-                appMainController.setReservedBalance_var(appMainController.getReservedBalance_var()+ pairConfiguration.getSumToTrade());
-                appMainController.reservedBalance.setText(String.valueOf(appMainController.getReservedBalance_var()));
-
             } else {
-                // Вызывается из LoadPairController, создаем новую запись и изменяем зарезервированный баланс
+                // Вызывается из LoadPairController, создаем новую запись
                 binancePairDAO.addBotConfiguration(pairConfiguration);
-                appMainController.setReservedBalance_var(appMainController.getReservedBalance_var()+ pairConfiguration.getSumToTrade());
-                appMainController.reservedBalance.setText(String.valueOf(appMainController.getReservedBalance_var()));
             }
             ((Stage) takeProfit.getScene().getWindow()).close();
 

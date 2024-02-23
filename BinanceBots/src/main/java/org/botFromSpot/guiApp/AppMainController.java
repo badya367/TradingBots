@@ -15,10 +15,13 @@ import org.botFromSpot.guiApp.model.BinancePair;
 import org.botFromSpot.guiApp.model.BinanceTokens;
 import org.botFromSpot.guiApp.model.BotConfiguration;
 import org.botFromSpot.guiApp.services.*;
+import org.botFromSpot.guiApp.utils.CryptoUtils;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+
+
 
 public class AppMainController {
     private Stage stage;
@@ -41,9 +44,9 @@ public class AppMainController {
     @FXML
     public Button ApplyTokensButton;
     @FXML
-    public TextField apiKey;
+    public PasswordField apiKey;
     @FXML
-    public TextField secretKey;
+    public PasswordField secretKey;
     //-------------------------------------------------------
     //Переменные связанные с Spring
     //private ApplyConfigService applyConfigService;
@@ -51,6 +54,8 @@ public class AppMainController {
     private BinanceApiMethods binanceApiMethods;
     private LoadPairController loadPairController;
     private PairSettingController pairSettingController;
+    private BotProvider botProvider;
+
     //public void setApplyConfigService(ApplyConfigService applyConfigService) {this.applyConfigService = applyConfigService;}
     public void setBinancePairDAO(BinancePairDAO binancePairDAO) {
         this.binancePairDAO = binancePairDAO;
@@ -60,6 +65,8 @@ public class AppMainController {
     public void setLoadPairController(LoadPairController loadPairController) {this.loadPairController = loadPairController;}
 
     public void setPairSettingController(PairSettingController pairSettingController) {this.pairSettingController = pairSettingController;}
+
+    public void setBotProvider(BotProvider botProvider) {this.botProvider = botProvider;}
 
     //-----------------------------------------------------
     public void setStage(Stage stage) {
@@ -74,15 +81,15 @@ public class AppMainController {
         List<BinancePair> allPairs = binancePairDAO.getAllPairs();
         for (BinancePair pair : allPairs) {
             items.add(pair);
-            if (pair != null){
-                if(binancePairDAO.getConfigurationForPair(pair.getId()) != null){
-                    reservedBalance_var += binancePairDAO.getConfigurationForPair(pair.getId()).getSumToTrade();
-                }
-            }
-
         }
 
-        reservedBalance.setText(String.valueOf(reservedBalance_var));
+        BinanceTokens tokens = binancePairDAO.getTokens();
+        if(tokens != null){
+            System.out.println("Api Key = " + tokens.getApiKey() + "\nSecret key = " + tokens.getSecretKey());
+            apiKey.setText(tokens.getApiKey());
+            secretKey.setText(tokens.getSecretKey());
+            balanceAcc.setText(String.valueOf(binanceApiMethods.getAccountBalanceForTestNet(tokens)));
+        }
     }
 
     @FXML
@@ -161,9 +168,16 @@ public class AppMainController {
         PairConfiguration pairConfig = binancePairDAO.getConfigurationForPair(pair.getId());
 
         BotConfiguration botRequest = new BotConfiguration(pair,pairConfig);
-        BotProvider botProvider = new BotProvider();
-        botProvider.createBot(botRequest);
-        botProvider.stopBot(botRequest);
+        //BotProvider botProvider = new BotProvider();
+        try {
+            botProvider.createBot(botRequest);
+            botProvider.stopBot(botRequest);
+        } catch (IllegalArgumentException e) {
+            System.out.println("В блоке catch");
+            e.getMessage();
+        }
+
+
 
 
     }
@@ -230,7 +244,11 @@ public class AppMainController {
     public void applyTokensBtnAction(ActionEvent event) {
         System.out.println(event + ": Кнопка подтверждения токенов");
         try {
-            BinanceTokens tokens = new BinanceTokens(apiKey.getText(), secretKey.getText());
+            String encryptedApiKey = CryptoUtils.encrypt(apiKey.getText());
+            String encryptedSecretKey = CryptoUtils.encrypt(secretKey.getText());
+
+            binancePairDAO.saveTokens(encryptedApiKey,encryptedSecretKey);
+            BinanceTokens tokens = new BinanceTokens(getApiKey(), getSecretKey());
             System.out.println("Api Key = " + tokens.getApiKey() + "\nSecret key = " + tokens.getSecretKey()); //Потом нужно будет убрать эту строчку
             binanceApiMethods.connectBinance(tokens);
             balanceAcc.setText(String.valueOf(binanceApiMethods.getAccountBalanceForTestNet(tokens)));
@@ -264,5 +282,13 @@ public class AppMainController {
 
     public void setReservedBalance_var(double reservedBalance_var) {
         this.reservedBalance_var = reservedBalance_var;
+    }
+
+    public String getApiKey() {
+        return String.valueOf(apiKey.getText());
+    }
+
+    public String getSecretKey() {
+        return String.valueOf(secretKey.getText());
     }
 }

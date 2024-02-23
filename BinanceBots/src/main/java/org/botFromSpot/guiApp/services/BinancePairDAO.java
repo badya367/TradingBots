@@ -1,6 +1,8 @@
 package org.botFromSpot.guiApp.services;
 
 import org.botFromSpot.guiApp.model.BinancePair;
+import org.botFromSpot.guiApp.model.BinanceTokens;
+import org.botFromSpot.guiApp.utils.CryptoUtils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,6 +16,43 @@ public class BinancePairDAO {
 
     public void setDataBaseService(DataBaseService dataBaseService) {
         this.dataBaseService = dataBaseService;
+    }
+    public void saveTokens(String encryptedApiKey, String encryptedSecretKey) {
+        Connection connection = dataBaseService.connectionDB();
+        try {
+            String query = "INSERT INTO tokens (api_key, secret_key) VALUES (?, ?)";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setString(1, encryptedApiKey);
+                preparedStatement.setString(2, encryptedSecretKey);
+                preparedStatement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public BinanceTokens getTokens() {
+        Connection connection = dataBaseService.connectionDB();
+        try {
+            String query = "SELECT api_key, secret_key FROM tokens ORDER BY id DESC LIMIT 1";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        String encryptedApiKey = resultSet.getString("api_key");
+                        String encryptedSecretKey = resultSet.getString("secret_key");
+
+                        // Расшифровка ключей, используя ваш CryptoUtils.decrypt
+                        String apiKey = CryptoUtils.decrypt(encryptedApiKey);
+                        String secretKey = CryptoUtils.decrypt(encryptedSecretKey);
+
+                        return new BinanceTokens(apiKey, secretKey);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
     }
     /* -------------------------------------------------------------------------
     // Вставка в таблицу pairs торговой пары

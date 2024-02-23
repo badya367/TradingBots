@@ -4,29 +4,20 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fe4f2d17-765e-4b5c-94b2-d67003c6b666" name="Changes" comment="Большая обнова!&#10;Добавлена логика взаимодействия объектов с БД и UI. &#10;Теперь есть возможность добавлять, изменять, удалять торговые пары и их настройки из списка в графическом интерфейсе и базы данных. &#10;Удалена вкладка &quot;Настройки&quot;, теперь настройки отображаются в новом окне, для неё был создан отдельный fxml и контроллер. &#10;Также для окна с загрузкой валютной пары был создан отдельный fxml и контролёр.&#10;Добавлены соотвествующие Bean и связи в файл applicationContext.xml">
-      <change afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/model/BotConfiguration.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/model/StrategyAveragingForSpot.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/BotProvider.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/binanceTestNetServices/TestNetSpotClient.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/binanceTestNetServices/TestNetSpotClientImpl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/binanceTestNetServices/TestNetWallet.java" afterDir="false" />
+    <list default="true" id="fe4f2d17-765e-4b5c-94b2-d67003c6b666" name="Changes" comment="Большая обнова!&#10;Добавлены поля с балансом и зарезервированным балансом на главную страницу.&#10;Добавлена обработка ошибок при взаимодействии с приложенем при не введёных Api и Secret Key.&#10;Рефакторинг названий классов.&#10;Добавлена возможность работать с тестовой сетью бинанса (binanceTestNetServices).&#10;Добавлены действия при нажатии правой кнопки мыши по торговой паре.&#10;Начата разработка логики запуска торгового бота с выбранной торговой парой.">
+      <change afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/utils/CryptoUtils.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/BinanceBots/src/main/resources/sqlScripts/createTokens.sql" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BinanceBots/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/module-info.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/AppMainController.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/AppMainController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/LoadPairController.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/LoadPairController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/PairSettingController.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/PairSettingController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/model/BinanceTokens.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/model/BinanceTokens.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/ApplyConfigService.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/ApplyConfigService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/ApplyConfigServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/ApplyConfigServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/model/BotConfiguration.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/model/BotConfiguration.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/BinanceApiMethods.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/BinanceApiMethods.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/BinanceBotConfiguration.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/PairConfiguration.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/BinancePairDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/BinancePairDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/BotProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/BotProvider.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/DataBaseSQLiteImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/DataBaseSQLiteImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/DataBaseService.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/DataBaseService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/utils/Constants.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/utils/Constants.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/resources/app.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/resources/app.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/resources/sqlScripts/createSettingsPair.sql" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/resources/sqlScripts/createSettingsPair.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/resources/applicationContext.xml" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/resources/applicationContext.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -229,7 +220,15 @@
       <option name="project" value="LOCAL" />
       <updated>1708009141543</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Большая обнова!&#10;Добавлены поля с балансом и зарезервированным балансом на главную страницу.&#10;Добавлена обработка ошибок при взаимодействии с приложенем при не введёных Api и Secret Key.&#10;Рефакторинг названий классов.&#10;Добавлена возможность работать с тестовой сетью бинанса (binanceTestNetServices).&#10;Добавлены действия при нажатии правой кнопки мыши по торговой паре.&#10;Начата разработка логики запуска торгового бота с выбранной торговой парой.">
+      <option name="closed" value="true" />
+      <created>1708556777106</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1708556777106</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -242,7 +241,8 @@
     <MESSAGE value="Обновил обработку ошибок для полей с настройками(AppMainController.java) &#10;Обновил метод calculateStartingLotVolume - теперь работает корректно для любых значений (BinanceBotConfiguration.java)" />
     <MESSAGE value="Добавлена логика взаимодействия объектов с БД и UI. &#10;Теперь есть возможность добавлять, изменять, удалять торговые пары и их настройки из списка в графическом интерфейсе и базы данных. &#10;Удалена вкладка &quot;Настройки&quot;, теперь настройки отображаются в новом окне, для неё был создан отдельный fxml и контроллер. &#10;Также для окна с загрузкой валютной пары был создан отдельный fxml и контролёр.&#10;Добавлены соотвествующие Bean и связи в файл applicationContext.xml" />
     <MESSAGE value="Большая обнова!&#10;Добавлена логика взаимодействия объектов с БД и UI. &#10;Теперь есть возможность добавлять, изменять, удалять торговые пары и их настройки из списка в графическом интерфейсе и базы данных. &#10;Удалена вкладка &quot;Настройки&quot;, теперь настройки отображаются в новом окне, для неё был создан отдельный fxml и контроллер. &#10;Также для окна с загрузкой валютной пары был создан отдельный fxml и контролёр.&#10;Добавлены соотвествующие Bean и связи в файл applicationContext.xml" />
-    <option name="LAST_COMMIT_MESSAGE" value="Большая обнова!&#10;Добавлена логика взаимодействия объектов с БД и UI. &#10;Теперь есть возможность добавлять, изменять, удалять торговые пары и их настройки из списка в графическом интерфейсе и базы данных. &#10;Удалена вкладка &quot;Настройки&quot;, теперь настройки отображаются в новом окне, для неё был создан отдельный fxml и контроллер. &#10;Также для окна с загрузкой валютной пары был создан отдельный fxml и контролёр.&#10;Добавлены соотвествующие Bean и связи в файл applicationContext.xml" />
+    <MESSAGE value="Большая обнова!&#10;Добавлены поля с балансом и зарезервированным балансом на главную страницу.&#10;Добавлена обработка ошибок при взаимодействии с приложенем при не введёных Api и Secret Key.&#10;Рефакторинг названий классов.&#10;Добавлена возможность работать с тестовой сетью бинанса (binanceTestNetServices).&#10;Добавлены действия при нажатии правой кнопки мыши по торговой паре.&#10;Начата разработка логики запуска торгового бота с выбранной торговой парой." />
+    <option name="LAST_COMMIT_MESSAGE" value="Большая обнова!&#10;Добавлены поля с балансом и зарезервированным балансом на главную страницу.&#10;Добавлена обработка ошибок при взаимодействии с приложенем при не введёных Api и Secret Key.&#10;Рефакторинг названий классов.&#10;Добавлена возможность работать с тестовой сетью бинанса (binanceTestNetServices).&#10;Добавлены действия при нажатии правой кнопки мыши по торговой паре.&#10;Начата разработка логики запуска торгового бота с выбранной торговой парой." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
