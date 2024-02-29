@@ -7,4 +7,6 @@ public class Constants {
     public static final String CREATE_TOKENS_SQL = "createTokens.sql";
     public static final String GET_ALL_TABLES_SQL = "getAllTables.sql";
 
+    public static final int API_UPDATE_TIMEOUT = 1000;
+
 }

@@ -14,4 +14,5 @@ module BinanceBots {
     exports org.botFromSpot.guiApp.services;
     exports org.botFromSpot.guiApp.services.binanceTestNetServices;
     opens org.botFromSpot.guiApp.services.binanceTestNetServices to spring.core;
+    opens org.botFromSpot.guiApp.model to javafx.base;
 }

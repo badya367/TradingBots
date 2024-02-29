@@ -67,9 +67,9 @@
                                  <children>
                                     <TableView fx:id="cashTable" prefHeight="442.0" prefWidth="336.0">
                                       <columns>
-                                        <TableColumn prefWidth="142.0" text="Название валюты" />
-                                        <TableColumn minWidth="8.0" prefWidth="91.0" text="Цена покупки" />
-                                          <TableColumn prefWidth="102.0" text="Цена продажи" />
+                                        <TableColumn fx:id="pairNamesColumn" prefWidth="142.0" text="Название валюты" />
+                                        <TableColumn fx:id="pairPriceColumn" minWidth="8.0" prefWidth="91.0" text="Текущая цена" />
+                                          <TableColumn fx:id="pairProfitColumn" prefWidth="102.0" text="Профит" />
                                       </columns>
                                     </TableView>
                                  </children>

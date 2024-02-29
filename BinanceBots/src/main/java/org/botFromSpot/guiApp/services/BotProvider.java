@@ -7,6 +7,7 @@ import org.botFromSpot.guiApp.model.BotConfiguration;
 import org.botFromSpot.guiApp.model.StrategyAveragingForSpot;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class BotProvider {
@@ -23,20 +24,25 @@ public class BotProvider {
     }
 
     public void createBot(BotConfiguration botConfiguration){
-        if(!activeBots.contains(botConfiguration)){
+        if(!activeBots.contains(botConfiguration)){  //Если конфигурации нет в списке созданных ботов.
+            BinanceTokens tokens = new BinanceTokens(appMainController.getApiKey(), appMainController.getSecretKey());
+
             BinancePair pair = botConfiguration.getPair();
             PairConfiguration pairConfiguration = botConfiguration.getConfiguration();
-            BinanceTokens tokens = new BinanceTokens(appMainController.getApiKey(), appMainController.getSecretKey());
+
             double sumForTrading = pairConfiguration.getSumToTrade();
             double balanceAcc = binanceApiMethods.getAccountBalanceForTestNet(tokens);
             double reservedBalance = appMainController.getReservedBalance_var();
+            if (balanceAcc - sumForTrading > 0 && balanceAcc-reservedBalance >= sumForTrading){ //Если хватает средств с учётом зарезервированных средств
 
-            if (balanceAcc - sumForTrading > 0 && balanceAcc-reservedBalance >= sumForTrading){
-                if(binanceApiMethods.getOpenOrders(tokens, pair.getPairName())) {
+                if(binanceApiMethods.getOpenOrders(tokens, pair.getPairName())) { //Если нет открытых ордеров по выбранной торговой паре
+
                     System.out.println("Создаём бота");
+                    //Резервируем баланс для выбранной торговой пары
                     appMainController.setReservedBalance_var(reservedBalance+sumForTrading);
                     appMainController.reservedBalance.setText(String.valueOf(appMainController.getReservedBalance_var()));
 
+                    //Добавляем бот в список активных и запускаем бот с выбранной стратегией
                     StrategyAveragingForSpot strategy = new StrategyAveragingForSpot(botConfiguration);
                     activeBots.add(botConfiguration);
                     strategy.start();
@@ -53,22 +59,37 @@ public class BotProvider {
     }
 
     public void stopBot(BotConfiguration botConfiguration){
-        for(BotConfiguration someConfig: activeBots){
-            if(someConfig.equals(botConfiguration)){
+        Iterator<BotConfiguration> iterator = activeBots.iterator();
+        while (iterator.hasNext()) {
+            BotConfiguration someConfig = iterator.next();
+            if (someConfig.equals(botConfiguration)) {
                 StrategyAveragingForSpot strategy = new StrategyAveragingForSpot(someConfig);
                 strategy.stop();
-                activeBots.remove(someConfig);
+                iterator.remove();
                 BinancePair pair = botConfiguration.getPair();
                 PairConfiguration pairConfiguration = botConfiguration.getConfiguration();
                 double sumForTrading = pairConfiguration.getSumToTrade();
                 double reservedBalance = appMainController.getReservedBalance_var();
-                appMainController.setReservedBalance_var(reservedBalance-sumForTrading);
+                appMainController.setReservedBalance_var(reservedBalance - sumForTrading);
                 appMainController.reservedBalance.setText(String.valueOf(appMainController.getReservedBalance_var()));
                 return;
             }
-            System.err.println("Такой бот не был запущен");
         }
+        System.err.println("Такой бот не был запущен");
     }
+
+
+
+    public List<String> getPairNameInActiveBots() {
+        List<String> pairNamesInActiveBots = new ArrayList<>();
+        for(BotConfiguration config: activeBots){
+            String pairName = config.getPair().getPairName();
+            pairNamesInActiveBots.add(pairName);
+        }
+        return pairNamesInActiveBots;
+    }
+
+
     //Принимает на вход конфигурацию (CreateAlgorithmRequest)
     //Проверяет что он единственный
     //createBot

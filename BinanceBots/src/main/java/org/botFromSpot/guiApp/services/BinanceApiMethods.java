@@ -8,15 +8,18 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ComboBox;
 import org.botFromSpot.guiApp.model.BinanceTokens;
+import org.botFromSpot.guiApp.model.PairPriceInfo;
 import org.botFromSpot.guiApp.services.binanceTestNetServices.TestNetSpotClient;
 import org.botFromSpot.guiApp.services.binanceTestNetServices.TestNetSpotClientImpl;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.*;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -145,9 +148,20 @@ public class BinanceApiMethods {
         }
         return false;
     }
+
+    public List<PairPriceInfo> getActualPriceForPairs(BinanceTokens tokens, List<String> pairs) {
+        SpotClient spotClient = new SpotClientImpl(tokens.getApiKey(),tokens.getSecretKey(), "https://testnet.binance.vision");
+
+        Map<String, Object> parameters = new LinkedHashMap<>();
+        parameters.put("symbols", pairs);
+
+        String jsonResponse = spotClient.createMarket().bookTicker(parameters);
+        return parsePairPriceInfo(jsonResponse);
+    }
     //-----------------------------------------------------------
     //Ниже необходимые приватные методы для работы этого класса  |
     //-----------------------------------------------------------
+    //метод для парсинга доступных торговых пар для торговли на бирже
     private ObservableList<String> parseTradingPairs(String jsonResponse) {
         // Код для парсинга JSON и извлечения торговых пар
         ObservableList<String> pairs = FXCollections.observableArrayList();
@@ -172,5 +186,31 @@ public class BinanceApiMethods {
         }
 
         return pairs;
+    }
+    //Метод для парсинга ответа от биржи с информацией о цене пары.
+    private List<PairPriceInfo> parsePairPriceInfo(String jsonResponse) {
+        List<PairPriceInfo> pairPriceInfoList = new ArrayList<>();
+
+        try {
+            JSONArray jsonArray = new JSONArray(jsonResponse);
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject pairObject = jsonArray.getJSONObject(i);
+
+                PairPriceInfo pairPriceInfo = new PairPriceInfo(
+                        pairObject.getString("symbol"),
+                        pairObject.getDouble("bidPrice"),
+                        pairObject.getDouble("bidQty"),
+                        pairObject.getDouble("askPrice"),
+                        pairObject.getDouble("askQty")
+                );
+
+                pairPriceInfoList.add(pairPriceInfo);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace(); // Обработайте исключение по вашему усмотрению
+        }
+
+        return pairPriceInfoList;
     }
 }

@@ -1,6 +1,8 @@
 package org.botFromSpot.guiApp;
 
 import com.binance.connector.client.exceptions.BinanceClientException;
+import javafx.beans.property.DoubleProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -8,32 +10,49 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import org.botFromSpot.guiApp.model.BinancePair;
 import org.botFromSpot.guiApp.model.BinanceTokens;
 import org.botFromSpot.guiApp.model.BotConfiguration;
+import org.botFromSpot.guiApp.model.PairPriceInfo;
 import org.botFromSpot.guiApp.services.*;
+import org.botFromSpot.guiApp.utils.Constants;
 import org.botFromSpot.guiApp.utils.CryptoUtils;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
-
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 
 public class AppMainController {
     private Stage stage;
     private ContextMenu contextMenu;
+    private ScheduledExecutorService scheduledExecutorService;
     @FXML
     public TextField testTextOutput;
+    //Переменные связанные с таблицей запущенных пар
+    @FXML
+    public TableView<PairPriceInfo> cashTable;
+    @FXML
+    public TableColumn<PairPriceInfo,String> pairNamesColumn;
+    @FXML
+    public TableColumn<PairPriceInfo, Double> pairPriceColumn;
+    @FXML
+    public TableColumn<PairPriceInfo,Double> pairProfitColumn;
+    ObservableList<PairPriceInfo> pairPriceInfoObservableList = FXCollections.observableArrayList();
+
     //Переменные связанные с кнопкой "Загрузить валютную пару"
     @FXML
-    public Button loadPairButton;
+    private Button loadPairButton;
     @FXML
     public ListView<BinancePair> selectedPairsList;
-
+    //Переменные связанные с балансом
     @FXML
     public Label balanceAcc;
     @FXML
@@ -42,11 +61,11 @@ public class AppMainController {
     //--------------------------------------------------------
     //Переменные связанные с токенами биржи
     @FXML
-    public Button ApplyTokensButton;
+    private Button ApplyTokensButton;
     @FXML
-    public PasswordField apiKey;
+    private PasswordField apiKey;
     @FXML
-    public PasswordField secretKey;
+    private PasswordField secretKey;
     //-------------------------------------------------------
     //Переменные связанные с Spring
     //private ApplyConfigService applyConfigService;
@@ -56,7 +75,6 @@ public class AppMainController {
     private PairSettingController pairSettingController;
     private BotProvider botProvider;
 
-    //public void setApplyConfigService(ApplyConfigService applyConfigService) {this.applyConfigService = applyConfigService;}
     public void setBinancePairDAO(BinancePairDAO binancePairDAO) {
         this.binancePairDAO = binancePairDAO;
     }
@@ -73,16 +91,16 @@ public class AppMainController {
         this.stage = stage;
     }
     @FXML
-    public void initialize() {
+    private void initialize() {
         testTextOutput.setText("Loaded");
         balanceAcc.setText("-");
-
+        //Добавляем пары из базы данных
         ObservableList<BinancePair> items = selectedPairsList.getItems();
         List<BinancePair> allPairs = binancePairDAO.getAllPairs();
         for (BinancePair pair : allPairs) {
             items.add(pair);
         }
-
+        //Записываем токены биржи из базы
         BinanceTokens tokens = binancePairDAO.getTokens();
         if(tokens != null){
             System.out.println("Api Key = " + tokens.getApiKey() + "\nSecret key = " + tokens.getSecretKey());
@@ -90,11 +108,21 @@ public class AppMainController {
             secretKey.setText(tokens.getSecretKey());
             balanceAcc.setText(String.valueOf(binanceApiMethods.getAccountBalanceForTestNet(tokens)));
         }
+        // Добавляем фабрики для столбцов в таблице cashTable
+        pairNamesColumn.setCellValueFactory(new PropertyValueFactory<>("symbol"));
+        pairPriceColumn.setCellValueFactory(new PropertyValueFactory<>("bidPrice"));
+        pairProfitColumn.setCellValueFactory(new PropertyValueFactory<>("profit"));
+
+        cashTable.setItems(pairPriceInfoObservableList);
+
+        //Создаём поток для работы стратегии
+        scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+        scheduledExecutorService.scheduleAtFixedRate(this::updatePricesInBackground, 0, Constants.API_UPDATE_TIMEOUT, TimeUnit.MILLISECONDS);
     }
 
     @FXML
-    public void loadPairButtonAction(ActionEvent event) {
-        // Новое окно после нажатия на кнопку
+    private void loadPairButtonAction(ActionEvent event) {
+        // Новое окно после нажатия на кнопку "Загрузить валютную пару
         try {
             if(apiKey.getText().isEmpty() || secretKey.getText().isEmpty()){
                 throw new IllegalArgumentException("Пустые значения ключей");
@@ -121,18 +149,8 @@ public class AppMainController {
             e.printStackTrace();
         }
     }
-    @FXML
-    private void listViewMouseClicked(MouseEvent event) {
-        if (event.getButton() == MouseButton.SECONDARY) {
-            showContextMenu(event);
-        } else if (event.getButton() == MouseButton.PRIMARY) {
-            // Скрываем контекстное меню при нажатии левой кнопки мыши
-            if (contextMenu != null) {
-                contextMenu.hide();
-                contextMenu = null;
-            }
-        }
-    }
+
+    //Методы для работы после нажатия правой кнопкой мыши в списке торговых пар
     private void showContextMenu(MouseEvent event) {
         BinancePair selectedPair = selectedPairsList.getSelectionModel().getSelectedItem();
 
@@ -159,30 +177,38 @@ public class AppMainController {
         }
     }
     @FXML
-    public void startBotAction() {
+    private void listViewMouseClicked(MouseEvent event) {
+        if (event.getButton() == MouseButton.SECONDARY) {
+            showContextMenu(event);
+        } else if (event.getButton() == MouseButton.PRIMARY) {
+            // Скрываем контекстное меню при нажатии левой кнопки мыши
+            if (contextMenu != null) {
+                contextMenu.hide();
+                contextMenu = null;
+            }
+        }
+    }
+    @FXML
+    private void startBotAction() {
         BinancePair pair = binancePairDAO.getBinancePairByPairName(selectedPairsList
                 .getSelectionModel()
                 .getSelectedItem()
                 .getPairName());
-
         PairConfiguration pairConfig = binancePairDAO.getConfigurationForPair(pair.getId());
 
         BotConfiguration botRequest = new BotConfiguration(pair,pairConfig);
+
         //BotProvider botProvider = new BotProvider();
         try {
             botProvider.createBot(botRequest);
-            botProvider.stopBot(botRequest);
+            //botProvider.stopBot(botRequest);
         } catch (IllegalArgumentException e) {
             System.out.println("В блоке catch");
-            e.getMessage();
+            e.printStackTrace();
         }
-
-
-
-
     }
     @FXML
-    public void editItemAction() {
+    private void editItemAction() {
         PairConfiguration editPair = binancePairDAO
                 .getConfigurationForPair(binancePairDAO
                 .getPairIdByPairName(selectedPairsList
@@ -208,7 +234,7 @@ public class AppMainController {
 
     }
     @FXML
-    public void deleteItemAction() {
+    private void deleteItemAction() {
         // Получение выбранной пары
         BinancePair selectedPair = selectedPairsList.getSelectionModel().getSelectedItem();
 
@@ -240,8 +266,9 @@ public class AppMainController {
     public void emptyFieldsForConfig() {
 
     }
+    //Метод для кнопки подтверждения токенов
     @FXML
-    public void applyTokensBtnAction(ActionEvent event) {
+    private void applyTokensBtnAction(ActionEvent event) {
         System.out.println(event + ": Кнопка подтверждения токенов");
         try {
             String encryptedApiKey = CryptoUtils.encrypt(apiKey.getText());
@@ -263,6 +290,64 @@ public class AppMainController {
         }
 
     }
+
+    //Методы для работы с потоком стратегии.
+    private void updatePricesInBackground() {
+        // Получение списка активных торговых пар из BotProvider
+        List<String> activePairs = botProvider.getPairNameInActiveBots();
+
+        if(!activePairs.isEmpty()){
+            // Вызов метода для получения актуальных цен из BinanceApiMethods
+            List<PairPriceInfo> pairsPriceInfoList = binanceApiMethods.getActualPriceForPairs(binancePairDAO.getTokens(), activePairs);
+            for (PairPriceInfo pair : pairsPriceInfoList){
+                updateOrAddRow(pair);
+            }
+        }
+
+        stage.setOnHidden(event -> stopBackgroundTasks());
+    }
+
+    private void stopBackgroundTasks() {
+        if (scheduledExecutorService != null && !scheduledExecutorService.isShutdown()) {
+            scheduledExecutorService.shutdown();
+        }
+    }
+
+    // Метод для добавления или обновления информации в таблице
+    private void updateOrAddRow(PairPriceInfo pairPriceInfo) {
+        String pairName = pairPriceInfo.getSymbol();
+        double bidPrice = pairPriceInfo.getBidPrice();
+        double profit = calculateProfit(pairPriceInfo); // Рассчитываем профит (замените на ваш расчет)
+
+        // Проверяем, есть ли уже такая торговая пара в таблице
+        boolean isPairExists = false;
+        for (PairPriceInfo existingPair : pairPriceInfoObservableList) {
+            if (existingPair.getSymbol().equals(pairName)) {
+                if(existingPair.getBidPrice() != pairPriceInfo.getBidPrice() ||
+                existingPair.getProfit() != pairPriceInfo.getProfit()){
+                    // Обновляем существующую строку
+                    existingPair.setBidPrice(bidPrice);
+                    existingPair.setProfit(profit);
+                    cashTable.refresh();
+                }
+                isPairExists = true;
+                break;
+            }
+        }
+
+        // Если нет, то добавляем новую строку
+        if (!isPairExists) {
+            pairPriceInfo.setProfit(profit);
+            pairPriceInfoObservableList.add(pairPriceInfo);
+        }
+    }
+
+    // ***** ВРЕМЕННАЯ ЗАГЛУШКА ***** Метод для расчета профита (пример, замените на свой расчет)
+    private double calculateProfit(PairPriceInfo pairPriceInfo) {
+        // Здесь может быть ваш расчет профита
+        return 0; // Пример: всегда возвращает "0"
+    }
+    //----------------------Служебные публичные методы-----------------------------
     public void updateSelectedPairsList(BinancePair newPair) {
         selectedPairsList.getItems().add(newPair);
     }
@@ -291,4 +376,6 @@ public class AppMainController {
     public String getSecretKey() {
         return String.valueOf(secretKey.getText());
     }
+
+
 }
