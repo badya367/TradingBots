@@ -4,6 +4,7 @@ import com.binance.connector.client.SpotClient;
 import com.binance.connector.client.exceptions.BinanceClientException;
 import com.binance.connector.client.exceptions.BinanceConnectorException;
 import com.binance.connector.client.impl.SpotClientImpl;
+import com.binance.connector.client.impl.spot.Market;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ComboBox;
@@ -18,11 +19,10 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.*;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 public class BinanceApiMethods {
@@ -81,8 +81,24 @@ public class BinanceApiMethods {
         //Закоменчено для получения баланса НЕ тестовой сети
         TestNetSpotClient client = new TestNetSpotClientImpl(tokens.getApiKey(),tokens.getSecretKey());
         String jsonAnswerAccountInfo = client.createWallet().walletBalance(parameters);
-        double balance = client.createWallet().getAvailableBalanceInUSDT(jsonAnswerAccountInfo,"USDT");
-        return balance;
+        BigDecimal bdBalance = BigDecimal.valueOf(
+                client.createWallet().getAvailableBalanceInUSDT(jsonAnswerAccountInfo,"USDT"));
+        bdBalance = bdBalance.setScale(
+                2,
+                RoundingMode.HALF_DOWN);
+
+        return bdBalance.doubleValue();
+    }
+
+    public String getWalletInfoForTestNet(BinanceTokens tokens){
+        Map<String, Object> parameters = new LinkedHashMap<>();
+        //SpotClient client = new SpotClientImpl(tokens.getApiKey(),tokens.getSecretKey());
+        //System.out.println(client.createWallet().walletBalance(parameters));
+        //Закоменчено для получения баланса НЕ тестовой сети
+        TestNetSpotClient client = new TestNetSpotClientImpl(tokens.getApiKey(),tokens.getSecretKey());
+        String jsonAnswerAccountInfo = client.createWallet().walletBalance(parameters);
+
+        return jsonAnswerAccountInfo;
     }
     public ComboBox<String> allPairs() {
         ComboBox<String> comboBox = new ComboBox<>();
@@ -128,13 +144,38 @@ public class BinanceApiMethods {
 
         return comboBox;
     }
+    public double getMinLotSizeForBuy(String pairName) {
+        double minLotSize = -1;
+        SpotClient client = new SpotClientImpl();
+        Market market = client.createMarket();
+        Map<String, Object> parameters = new LinkedHashMap<>();
+        parameters.put("symbol", pairName);
 
+        String result = market.exchangeInfo(parameters);
+        System.out.println(result);
+        minLotSize = parseMinLotSizeResponse(result);
+
+        return minLotSize;
+    }
+
+    public int getPrecisionSizeForTicker(String pairName, boolean isBaseAsset) {
+        int precisionSize;
+        SpotClient client = new SpotClientImpl();
+        Market market = client.createMarket();
+        Map<String, Object> parameters = new LinkedHashMap<>();
+        parameters.put("symbol", pairName);
+
+        String result = market.exchangeInfo(parameters);
+
+        precisionSize = parsePrecisionSizeResponse(result, isBaseAsset);
+        return precisionSize;
+    }
     public boolean getOpenOrders(BinanceTokens tokens, String pairName){
         Map<String, Object> parameters = new LinkedHashMap<>();
         SpotClient spotClient = new SpotClientImpl(tokens.getApiKey(),tokens.getSecretKey(), "https://testnet.binance.vision");
         parameters.put("symbol", pairName);
         try {
-            String result = spotClient.createTrade().getOpenOrders(parameters);
+            String result = spotClient.createTrade().getOrders(parameters);
             System.out.println(result);
             if(!result.isEmpty()){
                 return true;
@@ -148,7 +189,48 @@ public class BinanceApiMethods {
         }
         return false;
     }
+    public String openOrder(BinanceTokens tokens, String symbol, double quantity){
+        Map<String, Object> parameters = new LinkedHashMap<>();
 
+        SpotClient client = new SpotClientImpl(tokens.getApiKey(), tokens.getSecretKey(), "https://testnet.binance.vision");
+
+        parameters.put("symbol", symbol);
+        parameters.put("side", "BUY");
+        parameters.put("type", "MARKET");
+        parameters.put("quoteOrderQty", quantity);
+
+        try {
+            return client.createTrade().newOrder(parameters);
+        } catch (BinanceConnectorException e) {
+            System.err.println((String) String.format("fullErrMessage: %s", e.getMessage()));
+        } catch (BinanceClientException e) {
+            System.err.println((String) String.format("fullErrMessage: %s \nerrMessage: %s \nerrCode: %d \nHTTPStatusCode: %d",
+                    e.getMessage(), e.getErrMsg(), e.getErrorCode(), e.getHttpStatusCode()));
+        }
+
+        return null;
+    }
+
+    public String closeOrder(BinanceTokens tokens, String symbol, double quantity){
+        Map<String, Object> parameters = new LinkedHashMap<>();
+
+        SpotClient client = new SpotClientImpl(tokens.getApiKey(), tokens.getSecretKey(), "https://testnet.binance.vision");
+
+        parameters.put("symbol", symbol);
+        parameters.put("side", "SELL");
+        parameters.put("type", "MARKET");
+        parameters.put("quantity", quantity);
+
+        try {
+            return client.createTrade().newOrder(parameters);
+        } catch (BinanceConnectorException e) {
+            System.err.println((String) String.format("fullErrMessage: %s", e.getMessage()));
+        } catch (BinanceClientException e) {
+            System.err.println((String) String.format("fullErrMessage: %s \nerrMessage: %s \nerrCode: %d \nHTTPStatusCode: %d",
+                    e.getMessage(), e.getErrMsg(), e.getErrorCode(), e.getHttpStatusCode()));
+        }
+        return null;
+    }
     public List<PairPriceInfo> getActualPriceForPairs(BinanceTokens tokens, List<String> pairs) {
         SpotClient spotClient = new SpotClientImpl(tokens.getApiKey(),tokens.getSecretKey(), "https://testnet.binance.vision");
 
@@ -158,6 +240,60 @@ public class BinanceApiMethods {
         String jsonResponse = spotClient.createMarket().bookTicker(parameters);
         return parsePairPriceInfo(jsonResponse);
     }
+    public double getActualBidPriceForPair(String symbol) {
+        BinanceTokens tokens = binancePairDAO.getTokens();
+        SpotClient spotClient = new SpotClientImpl(tokens.getApiKey(), tokens.getSecretKey(), "https://testnet.binance.vision");
+        Map<String, Object> parameters = new LinkedHashMap<>();
+        parameters.put("symbol", symbol);
+
+        String jsonResponse = spotClient.createMarket().bookTicker(parameters);
+
+        JSONObject json = new JSONObject(jsonResponse);
+
+
+        return json.getDouble("bidPrice");
+    }
+
+    public int getOrderIdByPairName(BinanceTokens tokens, String symbol){
+        Map<String, Object> parameters = new LinkedHashMap<>();
+        int orderID = 0;
+        SpotClient client = new SpotClientImpl(tokens.getApiKey(), tokens.getSecretKey(), "https://testnet.binance.vision");
+
+        parameters.put("symbol", symbol);
+
+        try {
+            String result = client.createTrade().myTrades(parameters);
+            System.out.println(result);
+            orderID = parseOrderIdResponse(result);
+            System.out.println(orderID);
+
+        } catch (BinanceConnectorException e) {
+            System.err.println((String) String.format("fullErrMessage: %s", e.getMessage()));
+        } catch (BinanceClientException e) {
+            System.err.println((String) String.format("fullErrMessage: %s \nerrMessage: %s \nerrCode: %d \nHTTPStatusCode: %d",
+                    e.getMessage(), e.getErrMsg(), e.getErrorCode(), e.getHttpStatusCode()));
+        }
+
+        return orderID;
+    }
+    public void getAvgBuyPrice(BinanceTokens tokens, List<PairPriceInfo> pairs) {
+        Map<String, Object> parameters = new LinkedHashMap<>();
+
+        SpotClient client = new SpotClientImpl(tokens.getApiKey(), tokens.getSecretKey(), "https://testnet.binance.vision");
+        for (PairPriceInfo pair: pairs){
+            parameters.put("symbols", pair.getSymbol());
+        }
+        try {
+            String result = client.createTrade().getOpenOrders(parameters);
+            System.out.println(result);
+        } catch (BinanceConnectorException e) {
+            System.err.println((String) String.format("fullErrMessage: %s", e.getMessage()));
+        } catch (BinanceClientException e) {
+            System.err.println((String) String.format("fullErrMessage: %s \nerrMessage: %s \nerrCode: %d \nHTTPStatusCode: %d",
+                    e.getMessage(), e.getErrMsg(), e.getErrorCode(), e.getHttpStatusCode()));
+        }
+    }
+
     //-----------------------------------------------------------
     //Ниже необходимые приватные методы для работы этого класса  |
     //-----------------------------------------------------------
@@ -212,5 +348,75 @@ public class BinanceApiMethods {
         }
 
         return pairPriceInfoList;
+    }
+    //Метод для парсинга orderId
+    private int parseOrderIdResponse(String jsonResponse) {
+        int orderId = 0;
+        try {
+            JSONArray jsonArray = new JSONArray(jsonResponse);
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject pairObject = jsonArray.getJSONObject(i);
+
+                orderId = pairObject.getInt("orderId");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace(); // Обработайте исключение по вашему усмотрению
+        }
+
+        return orderId;
+    }
+    //Метод для парсинга минимального лота для пары
+    private double parseMinLotSizeResponse(String jsonResponse) {
+        double minLotSize = -1;
+        JSONObject jsonObject = new JSONObject(jsonResponse);
+        JSONArray symbolsArray = jsonObject.getJSONArray("symbols");
+        if (!symbolsArray.isEmpty()) {
+            JSONObject symbolArray = symbolsArray.getJSONObject(0);
+            JSONArray filtersArray = symbolArray.getJSONArray("filters");
+
+            // Ищем фильтр LOT_SIZE
+            for (int i = 0; i < filtersArray.length(); i++) {
+                JSONObject filter = filtersArray.getJSONObject(i);
+                if ("LOT_SIZE".equals(filter.getString("filterType"))) {
+                    String minQty = filter.getString("minQty");
+                    minLotSize = Double.parseDouble(minQty);
+                }
+            }
+        }
+        return minLotSize;
+    }
+    //Метод для парсинга размера лота (StepSize) для пары
+    private int parsePrecisionSizeResponse(String jsonResponse, boolean isBaseAsset) {
+        int stepSize = -1;
+        try {
+            JSONObject jsonObject = new JSONObject(jsonResponse);
+            JSONArray symbolsArray = jsonObject.getJSONArray("symbols");
+            for (int i = 0; i < symbolsArray.length(); i++) {
+                JSONObject symbolObject = symbolsArray.getJSONObject(i);
+                if(isBaseAsset){
+                    stepSize = symbolObject.getInt("baseAssetPrecision");
+                }
+                else {
+                    stepSize = symbolObject.getInt("quoteAssetPrecision");
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return stepSize;
+    }
+
+    //-----------------------------------------------------------
+    //Ниже необходимые публичные методы для работы этого класса  |
+    //-----------------------------------------------------------
+
+    public double convertingInBaseAsset(double quoteAsset, String symbol){
+        double baseAssetSize;
+
+        if (quoteAsset < 1) { baseAssetSize = quoteAsset * getActualBidPriceForPair(symbol);}
+        else { baseAssetSize = quoteAsset / getActualBidPriceForPair(symbol);}
+
+        return baseAssetSize;
     }
 }

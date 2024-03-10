@@ -2,6 +2,7 @@ package org.botFromSpot.guiApp.services;
 
 import org.botFromSpot.guiApp.model.BinancePair;
 import org.botFromSpot.guiApp.model.BinanceTokens;
+import org.botFromSpot.guiApp.model.TradeInfo;
 import org.botFromSpot.guiApp.utils.CryptoUtils;
 
 import java.sql.Connection;
@@ -104,6 +105,35 @@ public class BinancePairDAO {
         }
     }
     /* -------------------------------------------------------------------------
+    // Вставка в таблицу tradesInfo информации о торговой паре
+    --------------------------------------------------------------------------*/
+    public void addTradeInfo(TradeInfo tradeInfo) {
+        Connection connection = dataBaseService.connectionDB();
+        try {
+            String query = "INSERT INTO tradesInfo (pairId, " +
+                    "buyPrice, " +
+                    "lotSize," +
+                    "openedOrders," +
+                    "transactTime," +
+                    "isTradeAllowed) VALUES (?, ?, ?, ?, ?, ?);";
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setInt(1, tradeInfo.getPairId());
+                statement.setDouble(2, tradeInfo.getBuyPrice());
+                statement.setDouble(3, tradeInfo.getLotSize());
+                statement.setInt(4, tradeInfo.getOpenedOrders());
+                statement.setLong(5, tradeInfo.getTransactTime());
+                statement.setBoolean(6, tradeInfo.isTradeAllowed());
+
+
+                statement.executeUpdate();
+                System.out.println("Конфигурация для pairId " + tradeInfo.getPairId() + " добавлена в таблицу tradesInfo.");
+            }
+        } catch (SQLException e) {
+            System.err.println("Ошибка при добавлении конфигурации в таблицу settings: " + e.getMessage());
+        }
+    }
+
+    /* -------------------------------------------------------------------------
     // Изменение botConfiguration конфигурации для торговой пары по pairId
     --------------------------------------------------------------------------*/
     public void updateBotConfiguration(PairConfiguration botConfiguration) {
@@ -134,6 +164,36 @@ public class BinancePairDAO {
             }
         } catch (SQLException e) {
             System.err.println("Ошибка при обновлении конфигурации в таблице settings: " + e.getMessage());
+        }
+    }
+
+    /* -------------------------------------------------------------------------
+    // Изменение botConfiguration конфигурации для торговой пары по pairId
+    --------------------------------------------------------------------------*/
+    public void updateTradeInfo(TradeInfo tradeInfo) {
+        Connection connection = dataBaseService.connectionDB();
+        try {
+            String query = "UPDATE tradesInfo SET buyPrice=?, lotSize=?, openedOrders=?, " +
+                    "transactTime=?, isTradeAllowed=? WHERE pairId=?;";
+
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setDouble(1, tradeInfo.getBuyPrice());
+                statement.setDouble(2, tradeInfo.getLotSize());
+                statement.setInt(3, tradeInfo.getOpenedOrders());
+                statement.setLong(4, tradeInfo.getTransactTime());
+                statement.setBoolean(5, tradeInfo.isTradeAllowed());
+                statement.setInt(6, tradeInfo.getPairId());
+
+                int rowsAffected = statement.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    System.out.println("Конфигурация для pairId " + tradeInfo.getPairId() + " обновлена в таблице tradesInfo.");
+                } else {
+                    System.out.println("Конфигурация для pairId " + tradeInfo.getPairId() + " не найдена в таблице tradesInfo.");
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Ошибка при обновлении конфигурации в таблице tradesInfo: " + e.getMessage());
         }
     }
     /* -------------------------------------------------------------------------
@@ -262,6 +322,40 @@ public class BinancePairDAO {
 
         return botConfiguration;
     }
+
+    /* -------------------------------------------------------------------------
+    // Получаем конкретную информацию по трейдам по pairId
+    --------------------------------------------------------------------------*/
+    public TradeInfo getTradeInfoForPair(int pairId) {
+        TradeInfo tradeInfo = null;
+        Connection connection = dataBaseService.connectionDB();
+        try {
+            String query = "SELECT * FROM tradesInfo WHERE pairId = ?;";
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setInt(1, pairId);
+
+                try (ResultSet resultSet = statement.executeQuery()) {
+                    if (resultSet.next()) {
+                        double buyPrice = resultSet.getDouble("buyPrice");
+                        double lotSize = resultSet.getDouble("lotSize");
+                        int openedOrders = resultSet.getInt("openedOrders");
+                        boolean isTradeAllowed = resultSet.getBoolean("isTradeAllowed");
+
+                        tradeInfo = new TradeInfo();
+                        tradeInfo.setPairId(pairId);
+                        tradeInfo.setBuyPrice(buyPrice);
+                        tradeInfo.setLotSize(lotSize);
+                        tradeInfo.setOpenedOrders(openedOrders);
+                        tradeInfo.setTradeAllowed(isTradeAllowed);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Ошибка при чтении данных из таблицы tradesInfo: " + e.getMessage());
+        }
+
+        return tradeInfo;
+    }
     /* -------------------------------------------------------------------------
     // Удаляем конкретную конфигурацию по pairId
     --------------------------------------------------------------------------*/
@@ -306,6 +400,29 @@ public class BinancePairDAO {
             }
         } catch (SQLException e) {
             System.err.println("Ошибка при удалении пары из таблицы pairs: " + e.getMessage());
+        }
+    }
+    /* -------------------------------------------------------------------------
+    // Удаляем конкретную информацию из tradesInfo по pairId
+    --------------------------------------------------------------------------*/
+    public void deleteTradesInfo(int pairId) {
+        Connection connection = dataBaseService.connectionDB();
+        try {
+            String query = "DELETE FROM tradesInfo WHERE pairId=?;";
+
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setInt(1, pairId);
+
+                int rowsAffected = statement.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    System.out.println("Конфигурация для pairId " + pairId + " удалена из таблицы tradesInfo.");
+                } else {
+                    System.out.println("Конфигурация для pairId " + pairId + " не найдена в таблице tradesInfo.");
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Ошибка при удалении конфигурации из таблицы tradesInfo: " + e.getMessage());
         }
     }
 

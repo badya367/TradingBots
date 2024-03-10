@@ -5,8 +5,8 @@ public class Constants {
     public static final String CREATE_PAIRS_SQL = "createPairs.sql";
     public static final String CREATE_SETTINGS_PAIRS_SQL = "createSettingsPair.sql";
     public static final String CREATE_TOKENS_SQL = "createTokens.sql";
+    public static final String CREATE_TRADES_INFO_SQL = "createTradesInfo.sql";
     public static final String GET_ALL_TABLES_SQL = "getAllTables.sql";
-
     public static final int API_UPDATE_TIMEOUT = 1000;
 
 }

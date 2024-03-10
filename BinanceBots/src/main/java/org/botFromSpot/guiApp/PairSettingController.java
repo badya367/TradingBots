@@ -11,6 +11,8 @@ import org.botFromSpot.guiApp.services.PairConfiguration;
 import org.botFromSpot.guiApp.services.BinancePairDAO;
 
 import java.io.File;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
 public class PairSettingController {
@@ -65,9 +67,21 @@ public class PairSettingController {
                     Double.parseDouble(sumToTrade.getText()) <= 0) {
                 throw new IllegalArgumentException("The field has an incorrect value");
             }
+            BinancePair selectedPair = selectedPairsList.getSelectionModel().getSelectedItem();
+            BigDecimal bdStartinLotQuoteAsset = new BigDecimal(PairConfiguration.calculateStartingLotVolume(sumToTrade,multiplier,quantityOrders));
+            bdStartinLotQuoteAsset = bdStartinLotQuoteAsset.setScale(
+                    binanceApiMethods.getPrecisionSizeForTicker(selectedPair.getPairName(), false),
+                    RoundingMode.HALF_UP);
+            double checkStartingLotQuoteAsset = bdStartinLotQuoteAsset.doubleValue();
+            double checkStartingLotBaseAsset = binanceApiMethods.convertingInBaseAsset(checkStartingLotQuoteAsset, selectedPair.getPairName());
+            if(checkStartingLotBaseAsset < binanceApiMethods.getMinLotSizeForBuy(selectedPair.getPairName())) {
+                throw new IllegalArgumentException("The volume of the starting lot is less than the minimum allowed value for purchase. \n" +
+                        "Increase the volume for the bot or reduce the number of orders/multiplier");
+            }
+
             PairConfiguration pairConfiguration = new PairConfiguration();
             System.out.println(selectedPairsList.getSelectionModel().getSelectedItem());
-            BinancePair selectedPair = selectedPairsList.getSelectionModel().getSelectedItem();
+
             pairConfiguration.setPairId(binancePairDAO.getPairIdByPairName(selectedPair.getPairName()));
             pairConfiguration.setTakeProfit(Double.parseDouble(takeProfit.getText()));
             pairConfiguration.setAveragingStep(Double.parseDouble(averagingStep.getText()));
@@ -75,11 +89,11 @@ public class PairSettingController {
             pairConfiguration.setQuantityOrders(Integer.parseInt(quantityOrders.getText()));
             pairConfiguration.setAveragingTimer(Integer.parseInt(averagingTimer.getText()));
             pairConfiguration.setSumToTrade(Double.parseDouble(sumToTrade.getText()));
-            pairConfiguration.setStartingLotVolume(PairConfiguration.calculateStartingLotVolume(sumToTrade, multiplier, quantityOrders));
+            pairConfiguration.setStartingLotVolume(checkStartingLotQuoteAsset);
             pairConfiguration.setTradingRange(PairConfiguration.calculateTradingRange(averagingStep, quantityOrders));
 
             DecimalFormat df = new DecimalFormat("#.###");
-            startingLotVolume.setText(String.valueOf(df.format(pairConfiguration.getStartingLotVolume())));
+            startingLotVolume.setText(String.valueOf(checkStartingLotQuoteAsset));
             tradingRange.setText(String.valueOf(df.format(pairConfiguration.getTradingRange())));
             System.out.println(event);
             System.out.println(pairConfiguration);

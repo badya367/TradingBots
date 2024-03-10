@@ -14,9 +14,13 @@ public class BotProvider {
     private AppMainController appMainController;
     private BinanceApiMethods binanceApiMethods;
     private BinancePairDAO binancePairDAO;
+    private StrategyAveragingFromSpotProvider strategyProvider;
     public void setAppMainController(AppMainController appMainController) {this.appMainController = appMainController;}
     public void setBinanceApiMethods(BinanceApiMethods binanceApiMethods) {this.binanceApiMethods = binanceApiMethods;}
     public void setBinancePairDAO(BinancePairDAO binancePairDAO) {this.binancePairDAO = binancePairDAO;}
+
+    public void setStrategyProvider(StrategyAveragingFromSpotProvider strategyProvider) {this.strategyProvider = strategyProvider;}
+
     private List<BotConfiguration> activeBots;
 
     public BotProvider() {
@@ -34,21 +38,20 @@ public class BotProvider {
             double balanceAcc = binanceApiMethods.getAccountBalanceForTestNet(tokens);
             double reservedBalance = appMainController.getReservedBalance_var();
             if (balanceAcc - sumForTrading > 0 && balanceAcc-reservedBalance >= sumForTrading){ //Если хватает средств с учётом зарезервированных средств
+                System.out.println("Создаём бота");
+                //Резервируем баланс для выбранной торговой пары
+                appMainController.setReservedBalance_var(reservedBalance+sumForTrading);
+                appMainController.reservedBalance.setText(String.valueOf(appMainController.getReservedBalance_var()));
+                activeBots.add(botConfiguration);
+                //Добавляем бот в список активных и запускаем бот с выбранной стратегией
+                StrategyAveragingForSpot strategy = strategyProvider.getStrategyAveragingForSpot(
+                        botConfiguration,
+                        appMainController,
+                        binancePairDAO,
+                        binanceApiMethods);
 
-                if(binanceApiMethods.getOpenOrders(tokens, pair.getPairName())) { //Если нет открытых ордеров по выбранной торговой паре
 
-                    System.out.println("Создаём бота");
-                    //Резервируем баланс для выбранной торговой пары
-                    appMainController.setReservedBalance_var(reservedBalance+sumForTrading);
-                    appMainController.reservedBalance.setText(String.valueOf(appMainController.getReservedBalance_var()));
-
-                    //Добавляем бот в список активных и запускаем бот с выбранной стратегией
-                    StrategyAveragingForSpot strategy = new StrategyAveragingForSpot(botConfiguration);
-                    activeBots.add(botConfiguration);
-                    strategy.start();
-                } else {
-                    throw new IllegalArgumentException("По данной паре существуют открытые сделки");
-                }
+                strategy.start();
             } else {
                 throw new IllegalArgumentException("Недостаточно баланса для открытия пары");
             }
@@ -63,15 +66,22 @@ public class BotProvider {
         while (iterator.hasNext()) {
             BotConfiguration someConfig = iterator.next();
             if (someConfig.equals(botConfiguration)) {
-                StrategyAveragingForSpot strategy = new StrategyAveragingForSpot(someConfig);
+                StrategyAveragingForSpot strategy = strategyProvider.getStrategyAveragingForSpot(
+                        botConfiguration,
+                        appMainController,
+                        binancePairDAO,
+                        binanceApiMethods);
+
                 strategy.stop();
                 iterator.remove();
                 BinancePair pair = botConfiguration.getPair();
+                System.out.println("Cтоп для " + pair.getPairName());
                 PairConfiguration pairConfiguration = botConfiguration.getConfiguration();
                 double sumForTrading = pairConfiguration.getSumToTrade();
                 double reservedBalance = appMainController.getReservedBalance_var();
                 appMainController.setReservedBalance_var(reservedBalance - sumForTrading);
                 appMainController.reservedBalance.setText(String.valueOf(appMainController.getReservedBalance_var()));
+                appMainController.removeRunningPair(pair);
                 return;
             }
         }

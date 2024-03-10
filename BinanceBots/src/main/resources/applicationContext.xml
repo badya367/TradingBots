@@ -17,6 +17,7 @@
         <property name="loadPairController" ref="loadPairController"/>
         <property name="pairSettingController" ref="pairSettingController"/>
         <property name="botProvider" ref="botProvider"/>
+        <property name="strategyProvider" ref="strategyProvider"/>
     </bean>
     <bean id="applyConfigService" class="org.botFromSpot.guiApp.services.ApplyConfigServiceImpl">
         <property name="dataBaseService" ref="dataBaseService"/>
@@ -50,5 +51,13 @@
         <property name="appMainController" ref="appMainController"/>
         <property name="binancePairDAO" ref="binancePairDAO"/>
         <property name="binanceApiMethods" ref="binanceApiMethods"/>
+        <property name="strategyProvider" ref="strategyProvider"/>
+    </bean>
+    <bean id="strategyProvider" class="org.botFromSpot.guiApp.services.StrategyAveragingFromSpotProvider">
+    </bean>
+    <bean id="averagingProvider" factory-bean="strategyProvider" factory-method="getStrategyAveragingForSpot" scope="prototype">
+        <property name="binancePairDAO" ref="binancePairDAO"/>
+        <property name="binanceApiMethods" ref="binanceApiMethods"/>
+        <property name="appMainController" ref="appMainController"/>
     </bean>
 </beans>

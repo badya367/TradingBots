@@ -34,6 +34,10 @@ public class DataBaseSQLiteImpl implements DataBaseService {
             String createTokensTable = SqlQueryLoader.loadSql(Constants.CREATE_TOKENS_SQL);
             PreparedStatement preparedStatementCreateTokensTable = connection.prepareStatement(createTokensTable);
             int resultSetCreateTokensTable = preparedStatementCreateTokensTable.executeUpdate();
+            String createTradesInfoTable = SqlQueryLoader.loadSql(Constants.CREATE_TRADES_INFO_SQL);
+            PreparedStatement preparedStatementCreateTradesInfoTable = connection.prepareStatement(createTradesInfoTable);
+            int resultSetCreateTradesInfoTable = preparedStatementCreateTradesInfoTable.executeUpdate();
+
             String getAllTablesQueryCheck = SqlQueryLoader.loadSql(Constants.GET_ALL_TABLES_SQL);
             PreparedStatement preparedStatement = connection.prepareStatement(getAllTablesQueryCheck);
             ResultSet resultSet = preparedStatement.executeQuery();

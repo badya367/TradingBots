@@ -14,15 +14,13 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
-import org.botFromSpot.guiApp.model.BinancePair;
-import org.botFromSpot.guiApp.model.BinanceTokens;
-import org.botFromSpot.guiApp.model.BotConfiguration;
-import org.botFromSpot.guiApp.model.PairPriceInfo;
+import org.botFromSpot.guiApp.model.*;
 import org.botFromSpot.guiApp.services.*;
 import org.botFromSpot.guiApp.utils.Constants;
 import org.botFromSpot.guiApp.utils.CryptoUtils;
 
 import java.io.IOException;
+import java.net.Socket;
 import java.net.URL;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -45,7 +43,7 @@ public class AppMainController {
     public TableColumn<PairPriceInfo, Double> pairPriceColumn;
     @FXML
     public TableColumn<PairPriceInfo,Double> pairProfitColumn;
-    ObservableList<PairPriceInfo> pairPriceInfoObservableList = FXCollections.observableArrayList();
+    public ObservableList<PairPriceInfo> pairPriceInfoObservableList = FXCollections.observableArrayList();
 
     //Переменные связанные с кнопкой "Загрузить валютную пару"
     @FXML
@@ -75,6 +73,8 @@ public class AppMainController {
     private PairSettingController pairSettingController;
     private BotProvider botProvider;
 
+    private StrategyAveragingFromSpotProvider strategyProvider;
+
     public void setBinancePairDAO(BinancePairDAO binancePairDAO) {
         this.binancePairDAO = binancePairDAO;
     }
@@ -85,6 +85,8 @@ public class AppMainController {
     public void setPairSettingController(PairSettingController pairSettingController) {this.pairSettingController = pairSettingController;}
 
     public void setBotProvider(BotProvider botProvider) {this.botProvider = botProvider;}
+
+    public void setStrategyProvider(StrategyAveragingFromSpotProvider strategyProvider) {this.strategyProvider = strategyProvider;}
 
     //-----------------------------------------------------
     public void setStage(Stage stage) {
@@ -118,6 +120,8 @@ public class AppMainController {
         //Создаём поток для работы стратегии
         scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
         scheduledExecutorService.scheduleAtFixedRate(this::updatePricesInBackground, 0, Constants.API_UPDATE_TIMEOUT, TimeUnit.MILLISECONDS);
+
+
     }
 
     @FXML
@@ -158,8 +162,22 @@ public class AppMainController {
         if (selectedPair != null) {
             if (contextMenu == null) {
                 contextMenu = new ContextMenu();
-                MenuItem startBot = new MenuItem("Запустить");
-                startBot.setOnAction(e -> startBotAction());
+                if(!containsRunningPair(selectedPair.getPairName())){ // Если бот не запущен
+                    MenuItem startBot = new MenuItem("Запустить");
+                    startBot.setOnAction(e -> startBotAction());
+                    contextMenu.getItems().add(startBot);
+
+                }
+                else { //Если бот запущен
+                    MenuItem autoDrying = new MenuItem("Автосушка");
+                    autoDrying.setOnAction(e -> autoDryingAction());
+                    contextMenu.getItems().add(autoDrying);
+
+                    MenuItem stopBot = new MenuItem("Остановить");
+                    stopBot.setOnAction(e-> stopBotAction());
+                    contextMenu.getItems().add(stopBot);
+                }
+
 
                 MenuItem editItem = new MenuItem("Изменить");
                 editItem.setOnAction(e -> editItemAction());
@@ -167,10 +185,14 @@ public class AppMainController {
                 MenuItem deleteItem = new MenuItem("Удалить");
                 deleteItem.setOnAction(e -> deleteItemAction());
 
-                contextMenu.getItems().addAll(startBot, editItem, deleteItem);
-
+                contextMenu.getItems().addAll(editItem, deleteItem);
                 // Добавляем слушатель для скрытия меню
                 contextMenu.setOnHidden(e -> contextMenu = null);
+
+                //Ниже просто код для быстрых действий с аккаунтом по клику правой кнопки мыши (НЕ ЛОГИКА БОТА)
+                //String walletBalance = binanceApiMethods.getWalletInfoForTestNet(binancePairDAO.getTokens());
+                //System.out.println(walletBalance);
+                //binanceApiMethods.closeOrder(binancePairDAO.getTokens(), "BTCUSDT", 0.00047);
             }
 
             contextMenu.show(selectedPairsList, event.getScreenX(), event.getScreenY());
@@ -206,6 +228,38 @@ public class AppMainController {
             System.out.println("В блоке catch");
             e.printStackTrace();
         }
+    }
+    @FXML
+    private void autoDryingAction() {
+        System.out.println("Здесь включается автосушка");
+    }
+    @FXML
+    private void stopBotAction() {
+        BinancePair selectedPair = selectedPairsList.getSelectionModel().getSelectedItem();
+
+        if (selectedPair == null) {
+            return;
+        }
+        Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmationAlert.setTitle("Подтверждение удаления");
+        confirmationAlert.setHeaderText(null);
+        confirmationAlert.setContentText("Вы уверены, что хотите остановить пару " + selectedPair.getPairName() + "? \n" +
+                "Открытые сделки по этой паре будут принудительно закрыты по текущей цене");
+
+        confirmationAlert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+
+        ButtonType userResponse = confirmationAlert.showAndWait().orElse(ButtonType.NO);
+
+
+        if (userResponse == ButtonType.YES) {
+
+            PairConfiguration pairConfig = binancePairDAO.getConfigurationForPair(selectedPair.getId());
+            BotConfiguration botRequest = new BotConfiguration(selectedPair, pairConfig);
+            botProvider.stopBot(botRequest);
+        }
+
+
+
     }
     @FXML
     private void editItemAction() {
@@ -297,10 +351,30 @@ public class AppMainController {
         List<String> activePairs = botProvider.getPairNameInActiveBots();
 
         if(!activePairs.isEmpty()){
+
             // Вызов метода для получения актуальных цен из BinanceApiMethods
             List<PairPriceInfo> pairsPriceInfoList = binanceApiMethods.getActualPriceForPairs(binancePairDAO.getTokens(), activePairs);
-            for (PairPriceInfo pair : pairsPriceInfoList){
-                updateOrAddRow(pair);
+
+            //binanceApiMethods.getAvgBuyPrice(binancePairDAO.getTokens(),pairsPriceInfoList);
+            for (PairPriceInfo pairPriceInfo : pairsPriceInfoList){
+
+                BinancePair tradingPair = binancePairDAO.getBinancePairByPairName(pairPriceInfo.getSymbol());
+                PairConfiguration tradingPairConfig = binancePairDAO.getConfigurationForPair(tradingPair.getId());
+                BotConfiguration botConfig = new BotConfiguration(tradingPair,tradingPairConfig);
+
+
+                StrategyAveragingForSpot averagingSpotStrategy = strategyProvider.getStrategyAveragingForSpot(
+                        botConfig,
+                        pairSettingController.appMainController, //Костыль надо поправлять
+                        binancePairDAO,
+                        binanceApiMethods);
+                //averagingSpotStrategy.setBinancePairDAO(binancePairDAO);
+                //averagingSpotStrategy.setBinanceApiMethods(binanceApiMethods);
+
+                updateOrAddRow(pairPriceInfo);
+
+                averagingSpotStrategy.update(pairPriceInfo);
+
             }
         }
 
@@ -334,15 +408,15 @@ public class AppMainController {
                 break;
             }
         }
-
+        List<String> activeBotsList = botProvider.getPairNameInActiveBots();
         // Если нет, то добавляем новую строку
-        if (!isPairExists) {
+        if (!isPairExists && activeBotsList.stream().anyMatch(pair -> pair.equals(pairName))) {
             pairPriceInfo.setProfit(profit);
             pairPriceInfoObservableList.add(pairPriceInfo);
         }
     }
 
-    // ***** ВРЕМЕННАЯ ЗАГЛУШКА ***** Метод для расчета профита (пример, замените на свой расчет)
+    // ***** ВРЕМЕННАЯ ЗАГЛУШКА ***** Метод для расчета профита
     private double calculateProfit(PairPriceInfo pairPriceInfo) {
         // Здесь может быть ваш расчет профита
         return 0; // Пример: всегда возвращает "0"
@@ -360,7 +434,9 @@ public class AppMainController {
         MultipleSelectionModel<BinancePair> selectionModel = selectedPairsList.getSelectionModel();
         selectionModel.select(pairForSelect);
     }
-
+    public void removeRunningPair(BinancePair pair) {
+        pairPriceInfoObservableList.removeIf(pairRemove -> pairRemove.getSymbol().equals(pair.getPairName()));
+    }
     public double getReservedBalance_var() {
         return reservedBalance_var;
     }
@@ -375,6 +451,12 @@ public class AppMainController {
 
     public String getSecretKey() {
         return String.valueOf(secretKey.getText());
+    }
+    //----------------------Служебные приватные методы-----------------------------
+    private boolean containsRunningPair(String pairName) {
+        return pairPriceInfoObservableList.stream()
+                .map(PairPriceInfo::getSymbol) // Преобразование в поток названий пар
+                .anyMatch(pair -> pair.equals(pairName));
     }
 
 

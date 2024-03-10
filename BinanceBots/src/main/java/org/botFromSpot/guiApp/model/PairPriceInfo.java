@@ -9,7 +9,7 @@ public class PairPriceInfo {
     private double bidQty;
     private double askPrice;
     private double askQty;
-
+    private double avgBuyPrice; //Цена покупки пары
     private double profit;
 
     public PairPriceInfo(String symbol, double bidPrice, double bidQty, double askPrice, double askQty) {
@@ -44,6 +44,8 @@ public class PairPriceInfo {
         return profit;
     }
 
+    public double getAvgBuyPrice() {return avgBuyPrice;}
+
     public void setSymbol(String symbol) {
         this.symbol = symbol;
     }
@@ -66,5 +68,16 @@ public class PairPriceInfo {
 
     public void setProfit(double profit) {
         this.profit = profit;
+    }
+
+    public void setAvgBuyPrice(double avgBuyPrice) {this.avgBuyPrice = avgBuyPrice;}
+
+    @Override
+    public String toString() {
+        return "PairPriceInfo{" +
+                "symbol='" + symbol + '\'' +
+                ", bidPrice=" + bidPrice +
+                ", profit=" + profit +
+                '}';
     }
 }
