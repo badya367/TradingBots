@@ -18,13 +18,14 @@ public class BinancePairDAO {
     public void setDataBaseService(DataBaseService dataBaseService) {
         this.dataBaseService = dataBaseService;
     }
-    public void saveTokens(String encryptedApiKey, String encryptedSecretKey) {
+    public void saveTokens(String encryptedApiKey, String encryptedSecretKey, String stock) {
         Connection connection = dataBaseService.connectionDB();
         try {
-            String query = "INSERT INTO tokens (api_key, secret_key) VALUES (?, ?)";
+            String query = "INSERT INTO tokens (api_key, secret_key, stock) VALUES (?, ?, ?)";
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 preparedStatement.setString(1, encryptedApiKey);
                 preparedStatement.setString(2, encryptedSecretKey);
+                preparedStatement.setString(3, stock);
                 preparedStatement.executeUpdate();
             }
         } catch (SQLException e) {
@@ -54,6 +55,25 @@ public class BinancePairDAO {
             throw new RuntimeException(e);
         }
         return null;
+    }
+    public String getStock(String apiKey) {
+        Connection connection = dataBaseService.connectionDB();
+        String stock = "";
+        try {
+            String query = "SELECT stock FROM tokens WHERE api_key = ? ORDER BY id DESC LIMIT 1";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setString(1, apiKey);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        stock = resultSet.getString("stock");
+                        return stock;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return stock;
     }
     /* -------------------------------------------------------------------------
     // Вставка в таблицу pairs торговой пары
@@ -85,7 +105,8 @@ public class BinancePairDAO {
                     "averagingTimer, " +
                     "sumToTrade, " +
                     "startingLotVolume, " +
-                    "tradingRange) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
+                    "tradingRange, " +
+            "isChanged) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
             try (PreparedStatement statement = connection.prepareStatement(query)) {
                 statement.setInt(1, botConfiguration.getPairId());
                 statement.setDouble(2, botConfiguration.getTakeProfit());
@@ -96,6 +117,7 @@ public class BinancePairDAO {
                 statement.setDouble(7, botConfiguration.getSumToTrade());
                 statement.setDouble(8, botConfiguration.getStartingLotVolume());
                 statement.setDouble(9, botConfiguration.getTradingRange());
+                statement.setBoolean(10, botConfiguration.isChanged());
 
                 statement.executeUpdate();
                 System.out.println("Конфигурация для pairId " + botConfiguration.getPairId() + " добавлена в таблицу settings.");
@@ -115,7 +137,9 @@ public class BinancePairDAO {
                     "lotSize," +
                     "openedOrders," +
                     "transactTime," +
-                    "isTradeAllowed) VALUES (?, ?, ?, ?, ?, ?);";
+                    "isTradeAllowed," +
+                    "profit," +
+                    "isAutoDrying) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
             try (PreparedStatement statement = connection.prepareStatement(query)) {
                 statement.setInt(1, tradeInfo.getPairId());
                 statement.setDouble(2, tradeInfo.getBuyPrice());
@@ -123,6 +147,8 @@ public class BinancePairDAO {
                 statement.setInt(4, tradeInfo.getOpenedOrders());
                 statement.setLong(5, tradeInfo.getTransactTime());
                 statement.setBoolean(6, tradeInfo.isTradeAllowed());
+                statement.setDouble(7, tradeInfo.getProfit());
+                statement.setBoolean(8, tradeInfo.isAutoDrying());
 
 
                 statement.executeUpdate();
@@ -141,7 +167,7 @@ public class BinancePairDAO {
         try {
             String query = "UPDATE settings SET takeProfit=?, averagingStep=?, multiplier=?, " +
                     "quantityOrders=?, averagingTimer=?, sumToTrade=?, startingLotVolume=?, " +
-                    "tradingRange=? WHERE pairId=?;";
+                    "tradingRange=?, isChanged=? WHERE pairId=?;";
 
             try (PreparedStatement statement = connection.prepareStatement(query)) {
                 statement.setDouble(1, botConfiguration.getTakeProfit());
@@ -152,7 +178,8 @@ public class BinancePairDAO {
                 statement.setDouble(6, botConfiguration.getSumToTrade());
                 statement.setDouble(7, botConfiguration.getStartingLotVolume());
                 statement.setDouble(8, botConfiguration.getTradingRange());
-                statement.setInt(9, botConfiguration.getPairId());
+                statement.setBoolean(9, botConfiguration.isChanged());
+                statement.setInt(10, botConfiguration.getPairId());
 
                 int rowsAffected = statement.executeUpdate();
 
@@ -168,7 +195,7 @@ public class BinancePairDAO {
     }
 
     /* -------------------------------------------------------------------------
-    // Изменение botConfiguration конфигурации для торговой пары по pairId
+    // Изменение информации по последнему трейду торговой пары по pairId в tradesInfo
     --------------------------------------------------------------------------*/
     public void updateTradeInfo(TradeInfo tradeInfo) {
         Connection connection = dataBaseService.connectionDB();
@@ -194,6 +221,54 @@ public class BinancePairDAO {
             }
         } catch (SQLException e) {
             System.err.println("Ошибка при обновлении конфигурации в таблице tradesInfo: " + e.getMessage());
+        }
+    }
+    /* -------------------------------------------------------------------------
+    // Изменение профита торговой пары по pairId в tradesInfo
+    --------------------------------------------------------------------------*/
+    public void updateProfitInTradeInfo(TradeInfo tradeInfo) {
+        Connection connection = dataBaseService.connectionDB();
+        try {
+            String query = "UPDATE tradesInfo SET profit=? WHERE pairId=?;";
+
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setDouble(1, tradeInfo.getProfit());
+                statement.setInt(2, tradeInfo.getPairId());
+
+                int rowsAffected = statement.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    System.out.println("Профит для pairId " + tradeInfo.getPairId() + " обновлена в таблице tradesInfo.");
+                } else {
+                    System.out.println("Профит для pairId " + tradeInfo.getPairId() + " не найдена в таблице tradesInfo.");
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Ошибка при обновлении профита в таблице tradesInfo: " + e.getMessage());
+        }
+    }
+    /* -------------------------------------------------------------------------
+    // Изменение поля "автосушка" для торговой пары по pairId в tradesInfo
+    --------------------------------------------------------------------------*/
+    public void updateAutoDryingInTradeInfo(TradeInfo tradeInfo) {
+        Connection connection = dataBaseService.connectionDB();
+        try {
+            String query = "UPDATE tradesInfo SET isAutoDrying=? WHERE pairId=?;";
+
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setBoolean(1, tradeInfo.isAutoDrying());
+                statement.setInt(2, tradeInfo.getPairId());
+
+                int rowsAffected = statement.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    System.out.println("Поле \"Автосушка\" для pairId " + tradeInfo.getPairId() + " обновлена в таблице tradesInfo.");
+                } else {
+                    System.out.println("Поле \"Автосушка\" для pairId " + tradeInfo.getPairId() + " не найдена в таблице tradesInfo.");
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Ошибка при обновлении поля \"Автосушка\" в таблице tradesInfo: " + e.getMessage());
         }
     }
     /* -------------------------------------------------------------------------
@@ -294,7 +369,7 @@ public class BinancePairDAO {
 
                 try (ResultSet resultSet = statement.executeQuery()) {
                     if (resultSet.next()) {
-                        int takeProfit = resultSet.getInt("takeProfit");
+                        double takeProfit = resultSet.getDouble("takeProfit");
                         double averagingStep = resultSet.getDouble("averagingStep");
                         double multiplier = resultSet.getDouble("multiplier");
                         int quantityOrders = resultSet.getInt("quantityOrders");
@@ -302,7 +377,7 @@ public class BinancePairDAO {
                         double sumToTrade = resultSet.getDouble("sumToTrade");
                         double startingLotVolume = resultSet.getDouble("startingLotVolume");
                         double tradingRange = resultSet.getDouble("tradingRange");
-
+                        boolean isChanged = resultSet.getBoolean("isChanged");
                         botConfiguration = new PairConfiguration();
                         botConfiguration.setPairId(pairId);
                         botConfiguration.setTakeProfit(takeProfit);
@@ -313,6 +388,7 @@ public class BinancePairDAO {
                         botConfiguration.setSumToTrade(sumToTrade);
                         botConfiguration.setStartingLotVolume(startingLotVolume);
                         botConfiguration.setTradingRange(tradingRange);
+                        botConfiguration.setChanged(isChanged);
                     }
                 }
             }
@@ -339,14 +415,18 @@ public class BinancePairDAO {
                         double buyPrice = resultSet.getDouble("buyPrice");
                         double lotSize = resultSet.getDouble("lotSize");
                         int openedOrders = resultSet.getInt("openedOrders");
+                        long transactTime = resultSet.getLong("transactTime");
                         boolean isTradeAllowed = resultSet.getBoolean("isTradeAllowed");
+                        boolean isAutoDrying = resultSet.getBoolean("isAutoDrying");
 
                         tradeInfo = new TradeInfo();
                         tradeInfo.setPairId(pairId);
                         tradeInfo.setBuyPrice(buyPrice);
                         tradeInfo.setLotSize(lotSize);
                         tradeInfo.setOpenedOrders(openedOrders);
+                        tradeInfo.setTransactTime(transactTime);
                         tradeInfo.setTradeAllowed(isTradeAllowed);
+                        tradeInfo.setAutoDrying(isAutoDrying);
                     }
                 }
             }
@@ -355,6 +435,52 @@ public class BinancePairDAO {
         }
 
         return tradeInfo;
+    }
+    /* -------------------------------------------------------------------------
+    // Получаем профит пары по pairId
+    --------------------------------------------------------------------------*/
+    public double getProfitInTradeInfoForPair(int pairId) {
+        double profit = 0;
+        Connection connection = dataBaseService.connectionDB();
+        try {
+            String query = "SELECT profit FROM tradesInfo WHERE pairId = ?;";
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setInt(1, pairId);
+
+                try (ResultSet resultSet = statement.executeQuery()) {
+                    if (resultSet.next()) {
+                        profit = resultSet.getDouble("profit");
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Ошибка при чтении профита из таблицы tradesInfo: " + e.getMessage());
+        }
+
+        return profit;
+    }
+    /* -------------------------------------------------------------------------
+    // Получаем значение поля "Автосушка" для пары по pairId
+    --------------------------------------------------------------------------*/
+    public boolean getAutoDryingInTradeInfoForPair(int pairId) {
+        boolean isAutoDrying = false;
+        Connection connection = dataBaseService.connectionDB();
+        try {
+            String query = "SELECT isAutoDrying FROM tradesInfo WHERE pairId = ?;";
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setInt(1, pairId);
+
+                try (ResultSet resultSet = statement.executeQuery()) {
+                    if (resultSet.next()) {
+                        isAutoDrying = resultSet.getBoolean("isAutoDrying");
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Ошибка при чтении поля \"Автосушка\" из таблицы tradesInfo: " + e.getMessage());
+        }
+
+        return isAutoDrying;
     }
     /* -------------------------------------------------------------------------
     // Удаляем конкретную конфигурацию по pairId

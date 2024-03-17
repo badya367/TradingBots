@@ -12,6 +12,8 @@ public class TradeInfo {
     private int openedOrders;
     private long transactTime;
     private boolean isTradeAllowed;
+    private double profit;
+    private boolean isAutoDrying;
 
     public TradeInfo(){
     }
@@ -33,9 +35,7 @@ public class TradeInfo {
         this.buyPrice = buyPrice;
     }
 
-    public double getLotSize() {
-        return lotSize;
-    }
+    public double getLotSize() {return lotSize;}
 
     public void setLotSize(double lotSize) {
         this.lotSize = lotSize;
@@ -59,6 +59,14 @@ public class TradeInfo {
 
     public void setTradeAllowed(boolean tradeAllowed) {isTradeAllowed = tradeAllowed;}
 
+    public double getProfit() {return profit;}
+
+    public void setProfit(double profit) {this.profit = profit;}
+
+    public boolean isAutoDrying() {return isAutoDrying;}
+
+    public void setAutoDrying(boolean autoDrying) {isAutoDrying = autoDrying;}
+
     @Override
     public String toString() {
         return "TradeInfo{" +
@@ -68,6 +76,8 @@ public class TradeInfo {
                 ", openedOrders=" + openedOrders +
                 ", transactTime=" + transactTime +
                 ", isTradeAllowed=" + isTradeAllowed +
+                ", profit=" + profit +
+                ", isAutoDrying=" + isAutoDrying +
                 '}';
     }
 }

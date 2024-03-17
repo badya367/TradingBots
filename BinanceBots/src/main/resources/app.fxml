@@ -1,24 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
 
 <!--Допускается только один компонент на корневом уровне-->
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="589.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane fx:id="rootAnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="590.0" prefWidth="600.0" style="-fx-background-color: black;" stylesheets="@tabHeaderStyle.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <TabPane prefHeight="579.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE">
+      <TabPane prefHeight="589.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE">
         <tabs>
-          <Tab text="Программа">
+          <Tab style="-fx-background-color: darkgray; -fx-tab-label-text: bold;" text="Программа">
             <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="538.0" prefWidth="600.0">
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="579.0" prefWidth="598.0">
                      <children>
-                        <ScrollPane layoutX="14.0" layoutY="41.0" prefHeight="441.0" prefWidth="200.0">
+                        <ScrollPane layoutX="14.0" layoutY="41.0" prefHeight="441.0" prefWidth="200.0" style="-fx-base: darkgray;">
                           <content>
                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="426.0" prefWidth="200.0">
                                  <children>
-                                     <ListView fx:id="selectedPairsList" layoutY="2.0" onMouseClicked="#listViewMouseClicked" prefHeight="423.0" prefWidth="200.0" />
+                                     <ListView fx:id="selectedPairsList" layoutY="2.0" onMouseClicked="#listViewMouseClicked" prefHeight="423.0" prefWidth="200.0" style="-fx-background-color: darkgray;" />
                                  </children>
 
                             </AnchorPane>
@@ -26,20 +28,59 @@
                         </ScrollPane>
                         <HBox layoutX="17.0" layoutY="14.0" prefHeight="25.0" prefWidth="567.0">
                            <children>
-                              <Button fx:id="loadPairButton" mnemonicParsing="false" onAction="#loadPairButtonAction" text="Загрузить валютную пару" />
+                              <Button fx:id="loadPairButton" mnemonicParsing="false" onAction="#loadPairButtonAction" prefHeight="25.0" prefWidth="185.0" style="-fx-border-color: black;" text="Загрузить валютную пару">
+                                 <font>
+                                    <Font name="System Bold" size="12.0" />
+                                 </font>
+                                 <effect>
+                                    <Lighting>
+                                       <bumpInput>
+                                          <Shadow />
+                                       </bumpInput>
+                                       <light>
+                                          <Light.Distant />
+                                       </light>
+                                    </Lighting>
+                                 </effect></Button>
                               <HBox prefHeight="25.0" prefWidth="245.0">
                                  <children>
-                                    <HBox prefHeight="25.0" prefWidth="94.0" />
-                                    <HBox prefHeight="25.0" prefWidth="151.0">
+                                    <HBox prefHeight="25.0" prefWidth="130.0" />
+                                    <HBox prefHeight="25.0" prefWidth="100.0">
                                        <children>
-                                          <HBox prefHeight="25.0" prefWidth="67.0">
+                                          <HBox prefHeight="25.0" prefWidth="85.0">
                                              <children>
-                                                <Label alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="63.0" text="USDT:" />
+                                                <Label alignment="CENTER_RIGHT" mouseTransparent="true" prefHeight="17.0" prefWidth="47.0" text="USDT:">
+                                                   <effect>
+                                                      <DropShadow height="32.71" radius="15.0475" spread="0.33" width="29.48">
+                                                         <color>
+                                                            <Color red="0.6117647290229797" green="0.5137255191802979" blue="0.0235294122248888" />
+                                                         </color>
+                                                         <input>
+                                                            <ColorAdjust contrast="0.05" />
+                                                         </input>
+                                                      </DropShadow>
+                                                   </effect>
+                                                   <font>
+                                                      <Font name="System Bold" size="12.0" />
+                                                   </font></Label>
                                              </children>
                                           </HBox>
                                           <HBox prefHeight="25.0" prefWidth="92.0">
                                              <children>
-                                                <Label fx:id="balanceAcc" alignment="CENTER" prefHeight="26.0" prefWidth="88.0" />
+                                                <Label fx:id="balanceAcc" alignment="CENTER" prefHeight="16.0" prefWidth="57.0">
+                                                   <effect>
+                                                      <DropShadow height="31.26" radius="14.7625" spread="0.33" width="29.79">
+                                                         <color>
+                                                            <Color red="0.6117647290229797" green="0.5137255191802979" blue="0.0235294122248888" />
+                                                         </color>
+                                                         <input>
+                                                            <ColorAdjust contrast="0.05" />
+                                                         </input>
+                                                      </DropShadow>
+                                                   </effect>
+                                                   <font>
+                                                      <Font name="System Bold" size="12.0" />
+                                                   </font></Label>
                                              </children>
                                           </HBox>
                                        </children>
@@ -49,39 +90,65 @@
                                  <children>
                                     <HBox prefHeight="25.0" prefWidth="79.0">
                                        <children>
-                                          <Label alignment="CENTER_RIGHT" prefHeight="26.0" prefWidth="79.0" text="Reserved:" />
+                                          <Label alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="80.0" text="Reserved:">
+                                             <effect>
+                                                <DropShadow height="31.26" radius="14.7625" spread="0.33" width="29.79">
+                                                   <input>
+                                                      <ColorAdjust contrast="0.05" />
+                                                   </input>
+                                                   <color>
+                                                      <Color red="0.6117647290229797" green="0.5137255191802979" blue="0.0235294122248888" />
+                                                   </color>
+                                                </DropShadow>
+                                             </effect>
+                                             <font>
+                                                <Font name="System Bold" size="12.0" />
+                                             </font></Label>
                                        </children>
                                     </HBox>
                                     <HBox prefHeight="25.0" prefWidth="88.0">
                                        <children>
-                                          <Label fx:id="reservedBalance" alignment="CENTER" prefHeight="27.0" prefWidth="89.0" />
+                                          <Label fx:id="reservedBalance" alignment="CENTER" prefHeight="17.0" prefWidth="65.0">
+                                             <effect>
+                                                <DropShadow height="31.26" radius="14.7625" spread="0.33" width="29.79">
+                                                   <color>
+                                                      <Color red="0.6117647290229797" green="0.5137255191802979" blue="0.0235294122248888" />
+                                                   </color>
+                                                   <input>
+                                                      <ColorAdjust />
+                                                   </input>
+                                                </DropShadow>
+                                             </effect>
+                                             <font>
+                                                <Font name="System Bold" size="12.0" />
+                                             </font></Label>
                                        </children>
                                     </HBox>
                                  </children>
                               </HBox>
                            </children>
                         </HBox>
-                        <ScrollPane layoutX="221.0" layoutY="39.0" prefHeight="443.0" prefWidth="368.0">
+                        <ScrollPane layoutX="221.0" layoutY="39.0" prefHeight="444.0" prefWidth="368.0" style="-fx-base: darkgray;">
                           <content>
-                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="448.0" prefWidth="372.0">
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="448.0" prefWidth="336.0">
                                  <children>
-                                    <TableView fx:id="cashTable" prefHeight="442.0" prefWidth="336.0">
+                                    <TableView fx:id="cashTable" prefHeight="443.0" prefWidth="355.0" style="-fx-background-color: darkgray;">
                                       <columns>
                                         <TableColumn fx:id="pairNamesColumn" prefWidth="142.0" text="Название валюты" />
-                                        <TableColumn fx:id="pairPriceColumn" minWidth="8.0" prefWidth="91.0" text="Текущая цена" />
-                                          <TableColumn fx:id="pairProfitColumn" prefWidth="102.0" text="Профит" />
+                                        <TableColumn fx:id="pairPriceColumn" minWidth="8.0" prefWidth="100.0" text="Текущая цена" />
+                                          <TableColumn fx:id="pairProfitColumn" prefWidth="112.0" text="Профит" />
                                       </columns>
                                     </TableView>
                                  </children>
                               </AnchorPane>
                           </content>
                         </ScrollPane>
-                        <TextField fx:id="testTextOutput" layoutX="17.0" layoutY="498.0" prefHeight="25.0" prefWidth="570.0" />
+                        <TextField fx:id="testTextOutput" layoutX="17.0" layoutY="498.0" prefHeight="25.0" prefWidth="570.0" style="-fx-background-color: darkgray;" />
                      </children>
                   </AnchorPane>
             </content>
           </Tab>
-          <Tab text="Токены">
+          <Tab style="-fx-background-color: darkgray;" text="Токены">
              <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="476.0" prefWidth="600.0">
                   <children>
@@ -93,14 +160,24 @@
                                        <children>
                                           <Label alignment="CENTER" prefHeight="43.0" prefWidth="100.0" text="API key:" textAlignment="CENTER">
                                              <font>
-                                                <Font size="16.0" />
+                                                <Font name="System Bold" size="16.0" />
                                              </font>
+                                             <effect>
+                                                <DropShadow height="44.45" radius="22.457500000000003" spread="0.33" width="47.38">
+                                                   <color>
+                                                      <Color red="0.6117647290229797" green="0.5137255191802979" blue="0.0235294122248888" />
+                                                   </color>
+                                                   <input>
+                                                      <ColorAdjust contrast="0.05" />
+                                                   </input>
+                                                </DropShadow>
+                                             </effect>
                                           </Label>
                                        </children>
                                     </HBox>
                                     <HBox prefHeight="42.0" prefWidth="450.0">
                                        <children>
-                                          <PasswordField fx:id="apiKey" alignment="CENTER" prefHeight="45.0" prefWidth="450.0" promptText="Введите свой Api key">
+                                          <PasswordField fx:id="apiKey" alignment="CENTER" prefHeight="45.0" prefWidth="450.0" promptText="Введите свой Api key" style="-fx-background-color: darkgray; -fx-prompt-text-fill: #979797;">
                                              <font>
                                                 <Font size="16.0" />
                                              </font>
@@ -115,14 +192,24 @@
                                        <children>
                                           <Label alignment="CENTER" prefHeight="44.0" prefWidth="99.0" text="Secret key:" textAlignment="CENTER">
                                              <font>
-                                                <Font size="16.0" />
+                                                <Font name="System Bold" size="16.0" />
                                              </font>
+                                             <effect>
+                                                <DropShadow height="39.33" radius="22.645" spread="0.33" width="53.25">
+                                                   <color>
+                                                      <Color red="0.6117647290229797" green="0.5137255191802979" blue="0.0235294122248888" />
+                                                   </color>
+                                                   <input>
+                                                      <ColorAdjust contrast="0.05" />
+                                                   </input>
+                                                </DropShadow>
+                                             </effect>
                                           </Label>
                                        </children>
                                     </HBox>
                                     <HBox prefHeight="42.0" prefWidth="451.0">
                                        <children>
-                                          <PasswordField fx:id="secretKey" alignment="CENTER" prefHeight="45.0" prefWidth="450.0" promptText="Введите свой Secret Key">
+                                          <PasswordField fx:id="secretKey" alignment="CENTER" prefHeight="45.0" prefWidth="450.0" promptText="Введите свой Secret Key" style="-fx-background-color: darkgray; -fx-prompt-text-fill: #979797;">
                                              <font>
                                                 <Font size="16.0" />
                                              </font>
@@ -131,13 +218,73 @@
                                     </HBox>
                                  </children>
                               </HBox>
-                              <Button fx:id="ApplyTokensButton" contentDisplay="CENTER" layoutX="261.0" layoutY="132.0" mnemonicParsing="false" onAction="#applyTokensBtnAction" text="Подтвердить" />
+                              <Button fx:id="ApplyTokensButton" contentDisplay="CENTER" layoutX="261.0" layoutY="132.0" mnemonicParsing="false" onAction="#applyTokensBtnAction" style="-fx-border-color: black;" text="Подтвердить">
+                                 <effect>
+                                    <Lighting>
+                                       <bumpInput>
+                                          <Shadow />
+                                       </bumpInput>
+                                       <light>
+                                          <Light.Distant />
+                                       </light>
+                                    </Lighting>
+                                 </effect></Button>
                            </children></AnchorPane>
+                        <HBox layoutX="14.0" layoutY="509.0" prefHeight="37.0" prefWidth="577.0">
+                           <children>
+                              <RadioButton fx:id="binanceRadioButton" mnemonicParsing="false" onAction="#handleRadioButtonAction" text="Binance" textFill="#757575" />
+                              <RadioButton fx:id="testNetBinanceRadioButton" mnemonicParsing="false" onAction="#handleRadioButtonAction" text="TestNetBinance" textFill="#757575" />
+                              <RadioButton fx:id="byBitRadioButton" mnemonicParsing="false" onAction="#handleRadioButtonAction" text="ByBit" textFill="#757575" />
+                           </children>
+                        </HBox>
                   </children>
                 </AnchorPane>
              </content>
           </Tab>
+            <Tab style="-fx-background-color: darkgray;" text="Информация">
+                <content>
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="476.0" prefWidth="600.0">
+                        <children>
+                            <AnchorPane layoutX="13.0" layoutY="22.0" prefHeight="525.0" prefWidth="573.0">
+                           <children>
+                               <HBox layoutX="-1.0" layoutY="-2.0" prefHeight="490.0" prefWidth="575.0">
+                                   <children>
+                                       <ListView fx:id="informationListView" prefHeight="490.0" prefWidth="575.0" style="-fx-base: darkgray; -fx-background-color: darkgray;">
+                                           <!-- Добавьте параметры, настройки и события для ListView, если необходимо -->
+                                       </ListView>
+                                   </children>
+                               </HBox>
+                           </children></AnchorPane>
+                        </children>
+                    </AnchorPane>
+                </content>
+            </Tab>
         </tabs>
+         <effect>
+            <DropShadow blurType="GAUSSIAN" height="105.52" radius="56.655" spread="0.15" width="123.1">
+               <color>
+                  <Color red="0.6117647290229797" green="0.5137255191802979" blue="0.0235294122248888" opacity="0.5400000214576721" />
+               </color>
+               <input>
+                  <Blend mode="MULTIPLY">
+                     <topInput>
+                        <Lighting diffuseConstant="1.23" specularConstant="1.22" specularExponent="19.54" surfaceScale="0.12">
+                           <bumpInput>
+                              <Shadow height="3.0253125" radius="0.988828125" width="2.93" />
+                           </bumpInput>
+                           <light>
+                              <Light.Distant azimuth="7.76">
+                                 <color>
+                                    <Color red="0.8823529481887817" green="0.8823529481887817" blue="0.8823529481887817" />
+                                 </color>
+                              </Light.Distant>
+                           </light>
+                        </Lighting>
+                     </topInput>
+                  </Blend>
+               </input>
+            </DropShadow>
+         </effect>
       </TabPane>
    </children>
 </AnchorPane>

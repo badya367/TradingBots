@@ -1,5 +1,6 @@
 package org.botFromSpot.guiApp.services;
 
+import javafx.application.Platform;
 import org.botFromSpot.guiApp.AppMainController;
 import org.botFromSpot.guiApp.model.BinancePair;
 import org.botFromSpot.guiApp.model.BinanceTokens;
@@ -27,7 +28,7 @@ public class BotProvider {
         this.activeBots = new ArrayList<>();
     }
 
-    public void createBot(BotConfiguration botConfiguration){
+    public void createBot(BotConfiguration botConfiguration) throws IllegalArgumentException{
         if(!activeBots.contains(botConfiguration)){  //Если конфигурации нет в списке созданных ботов.
             BinanceTokens tokens = new BinanceTokens(appMainController.getApiKey(), appMainController.getSecretKey());
 
@@ -35,13 +36,20 @@ public class BotProvider {
             PairConfiguration pairConfiguration = botConfiguration.getConfiguration();
 
             double sumForTrading = pairConfiguration.getSumToTrade();
-            double balanceAcc = binanceApiMethods.getAccountBalanceForTestNet(tokens);
+            double balanceAcc = 0;
+
+            if (appMainController.selectedStock.equals("TestNetBinance")){
+                balanceAcc = binanceApiMethods.getAccountBalanceForTestNet(tokens);
+            }
+
             double reservedBalance = appMainController.getReservedBalance_var();
             if (balanceAcc - sumForTrading > 0 && balanceAcc-reservedBalance >= sumForTrading){ //Если хватает средств с учётом зарезервированных средств
                 System.out.println("Создаём бота");
                 //Резервируем баланс для выбранной торговой пары
                 appMainController.setReservedBalance_var(reservedBalance+sumForTrading);
-                appMainController.reservedBalance.setText(String.valueOf(appMainController.getReservedBalance_var()));
+                Platform.runLater(() -> {
+                    appMainController.reservedBalance.setText(String.valueOf(appMainController.getReservedBalance_var()));
+                });
                 activeBots.add(botConfiguration);
                 //Добавляем бот в список активных и запускаем бот с выбранной стратегией
                 StrategyAveragingForSpot strategy = strategyProvider.getStrategyAveragingForSpot(
@@ -60,6 +68,26 @@ public class BotProvider {
             throw new IllegalArgumentException("Такой бот уже запущен");
         }
     }
+    public void autoDryingBot(BotConfiguration botConfiguration){
+        Iterator<BotConfiguration> iterator = activeBots.iterator();
+        while (iterator.hasNext()) {
+            BotConfiguration someConfig = iterator.next();
+            if (someConfig.equals(botConfiguration)) {
+                StrategyAveragingForSpot strategy = strategyProvider.getStrategyAveragingForSpot(
+                        botConfiguration,
+                        appMainController,
+                        binancePairDAO,
+                        binanceApiMethods);
+
+                strategy.autoDrying();
+                //iterator.remove();
+                BinancePair pair = botConfiguration.getPair();
+                System.out.println("Автосушка для " + pair.getPairName());
+                return;
+            }
+        }
+        System.err.println("Не могу включить автосушку. Такой бот не был запущен");
+    }
 
     public void stopBot(BotConfiguration botConfiguration){
         Iterator<BotConfiguration> iterator = activeBots.iterator();
@@ -77,11 +105,23 @@ public class BotProvider {
                 BinancePair pair = botConfiguration.getPair();
                 System.out.println("Cтоп для " + pair.getPairName());
                 PairConfiguration pairConfiguration = botConfiguration.getConfiguration();
+                System.out.println("pairConfiguration is Changed?" + pairConfiguration.isChanged());
                 double sumForTrading = pairConfiguration.getSumToTrade();
                 double reservedBalance = appMainController.getReservedBalance_var();
                 appMainController.setReservedBalance_var(reservedBalance - sumForTrading);
-                appMainController.reservedBalance.setText(String.valueOf(appMainController.getReservedBalance_var()));
+                Platform.runLater(() -> {
+                    appMainController.reservedBalance.setText(String.valueOf(appMainController.getReservedBalance_var()));
+                });
+
                 appMainController.removeRunningPair(pair);
+
+                if (pairConfiguration.isChanged()){
+                    PairConfiguration newPairConfig = binancePairDAO.getConfigurationForPair(binancePairDAO.getPairIdByPairName(pair.getPairName()));
+                    newPairConfig.setChanged(false);
+                    binancePairDAO.updateBotConfiguration(newPairConfig);
+                    BotConfiguration botConfigurationNew = new BotConfiguration(pair, newPairConfig);
+                    createBot(botConfigurationNew);
+                }
                 return;
             }
         }

@@ -12,6 +12,7 @@ public class PairConfiguration {
     private double sumToTrade;
     private double startingLotVolume;
     private double tradingRange;
+    private boolean isChanged;
     //todo Add lombok Library
 
 
@@ -97,6 +98,16 @@ public class PairConfiguration {
 
     public void setTradingRange(double tradingRange) {
         this.tradingRange = tradingRange;
+    }
+
+    //---------------------------------------------------------------------------------//
+
+    public boolean isChanged() {
+        return isChanged;
+    }
+
+    public void setChanged(boolean changed) {
+        isChanged = changed;
     }
 
     @Override

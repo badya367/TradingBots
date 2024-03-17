@@ -7,12 +7,16 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Bounds;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.botFromSpot.guiApp.model.*;
 import org.botFromSpot.guiApp.services.*;
@@ -20,6 +24,8 @@ import org.botFromSpot.guiApp.utils.Constants;
 import org.botFromSpot.guiApp.utils.CryptoUtils;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.Socket;
 import java.net.URL;
 import java.util.List;
@@ -32,6 +38,8 @@ public class AppMainController {
     private Stage stage;
     private ContextMenu contextMenu;
     private ScheduledExecutorService scheduledExecutorService;
+    @FXML
+    private AnchorPane rootAnchorPane;
     @FXML
     public TextField testTextOutput;
     //Переменные связанные с таблицей запущенных пар
@@ -64,6 +72,20 @@ public class AppMainController {
     private PasswordField apiKey;
     @FXML
     private PasswordField secretKey;
+    @FXML
+    private RadioButton binanceRadioButton;
+
+    @FXML
+    private RadioButton testNetBinanceRadioButton;
+
+    @FXML
+    private RadioButton byBitRadioButton;
+    private ToggleGroup toggleGroup;
+    public String selectedStock;
+    //--------------------------------------------------------
+    //Переменные связанные с вкладкой информация
+    @FXML
+    private ListView<String> informationListView;
     //-------------------------------------------------------
     //Переменные связанные с Spring
     //private ApplyConfigService applyConfigService;
@@ -94,21 +116,40 @@ public class AppMainController {
     }
     @FXML
     private void initialize() {
+        informationListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        //informationListView.setStyle("-fx-control-inner-background: darkgray; -fx-base: darkgray;");
+        toggleGroup = new ToggleGroup();
+        binanceRadioButton.setToggleGroup(toggleGroup);
+        testNetBinanceRadioButton.setToggleGroup(toggleGroup);
+        byBitRadioButton.setToggleGroup(toggleGroup);
+
         testTextOutput.setText("Loaded");
         balanceAcc.setText("-");
+        reservedBalance.setText("-");
+        addLogEntry("Приложение запущено");
         //Добавляем пары из базы данных
         ObservableList<BinancePair> items = selectedPairsList.getItems();
         List<BinancePair> allPairs = binancePairDAO.getAllPairs();
         for (BinancePair pair : allPairs) {
             items.add(pair);
         }
+        selectedPairsList.setStyle("-fx-control-inner-background: darkgray; -fx-base: darkgray;");
+
         //Записываем токены биржи из базы
         BinanceTokens tokens = binancePairDAO.getTokens();
         if(tokens != null){
-            System.out.println("Api Key = " + tokens.getApiKey() + "\nSecret key = " + tokens.getSecretKey());
+            addLogEntry("Api Key = " + tokens.getApiKey() + "\nSecret key = " + tokens.getSecretKey());
+            //System.out.println("Api Key = " + tokens.getApiKey() + "\nSecret key = " + tokens.getSecretKey());
+
             apiKey.setText(tokens.getApiKey());
             secretKey.setText(tokens.getSecretKey());
-            balanceAcc.setText(String.valueOf(binanceApiMethods.getAccountBalanceForTestNet(tokens)));
+            selectedStock = binancePairDAO.getStock(CryptoUtils.encrypt(apiKey.getText()));
+            if(selectedStock.equals("TestNetBinance")){
+                testNetBinanceRadioButton.fire();
+                BinanceApiMethods.setBaseURL(Constants.TESTNET_BINANCE_BASE_URL);
+                balanceAcc.setText(String.valueOf(binanceApiMethods.getAccountBalanceForTestNet(tokens)));
+            }
+
         }
         // Добавляем фабрики для столбцов в таблице cashTable
         pairNamesColumn.setCellValueFactory(new PropertyValueFactory<>("symbol"));
@@ -120,7 +161,6 @@ public class AppMainController {
         //Создаём поток для работы стратегии
         scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
         scheduledExecutorService.scheduleAtFixedRate(this::updatePricesInBackground, 0, Constants.API_UPDATE_TIMEOUT, TimeUnit.MILLISECONDS);
-
 
     }
 
@@ -161,6 +201,7 @@ public class AppMainController {
         // только одно открытие contextMenu
         if (selectedPair != null) {
             if (contextMenu == null) {
+
                 contextMenu = new ContextMenu();
                 if(!containsRunningPair(selectedPair.getPairName())){ // Если бот не запущен
                     MenuItem startBot = new MenuItem("Запустить");
@@ -187,12 +228,15 @@ public class AppMainController {
 
                 contextMenu.getItems().addAll(editItem, deleteItem);
                 // Добавляем слушатель для скрытия меню
-                contextMenu.setOnHidden(e -> contextMenu = null);
+                contextMenu.setOnHidden(e -> {
+                    //selectedPairsList.getSelectionModel().clearSelection();
+                    contextMenu = null;
+                });
 
                 //Ниже просто код для быстрых действий с аккаунтом по клику правой кнопки мыши (НЕ ЛОГИКА БОТА)
                 //String walletBalance = binanceApiMethods.getWalletInfoForTestNet(binancePairDAO.getTokens());
                 //System.out.println(walletBalance);
-                //binanceApiMethods.closeOrder(binancePairDAO.getTokens(), "BTCUSDT", 0.00047);
+                //binanceApiMethods.closeOrder(binancePairDAO.getTokens(), "ETHUSDT", 1.00790000);
             }
 
             contextMenu.show(selectedPairsList, event.getScreenX(), event.getScreenY());
@@ -200,14 +244,23 @@ public class AppMainController {
     }
     @FXML
     private void listViewMouseClicked(MouseEvent event) {
-        if (event.getButton() == MouseButton.SECONDARY) {
-            showContextMenu(event);
+
+        if (event.getButton() == MouseButton.SECONDARY && contextMenu == null) {
+            // Если элемент выбран, открываем контекстное меню
+            if (selectedPairsList.getSelectionModel().getSelectedItem() != null) {
+                showContextMenu(event);
+            }
+
         } else if (event.getButton() == MouseButton.PRIMARY) {
             // Скрываем контекстное меню при нажатии левой кнопки мыши
             if (contextMenu != null) {
+                selectedPairsList.getSelectionModel().clearSelection();
                 contextMenu.hide();
                 contextMenu = null;
             }
+        } else if (contextMenu != null) {
+            contextMenu.hide();
+            contextMenu = null;
         }
     }
     @FXML
@@ -225,13 +278,42 @@ public class AppMainController {
             botProvider.createBot(botRequest);
             //botProvider.stopBot(botRequest);
         } catch (IllegalArgumentException e) {
-            System.out.println("В блоке catch");
+            Alert informationAlert = new Alert(Alert.AlertType.WARNING);
+            informationAlert.setTitle("Недостаточный баланс");
+            informationAlert.setHeaderText("Вашего свободного баланса недостаточно для запуска этой пары");
+            informationAlert.showAndWait();
             e.printStackTrace();
         }
     }
     @FXML
     private void autoDryingAction() {
         System.out.println("Здесь включается автосушка");
+        BinancePair selectedPair = selectedPairsList.getSelectionModel().getSelectedItem();
+        System.out.println("selectedPair = " + selectedPair);
+        System.out.println("selectedPairID = " + selectedPair.getId());
+        if (selectedPair == null || binancePairDAO.getAutoDryingInTradeInfoForPair(selectedPair.getId())) {
+            return;
+        }
+        Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmationAlert.setTitle("Подтверждение включения автосушки");
+        confirmationAlert.setHeaderText(null);
+        confirmationAlert.setContentText("Вы уверены, что хотите включить автосушку для пары " + selectedPair.getPairName() + "? \n" +
+                "Открытые сделки по этой паре будут закрыты по тейк-профиту и бот закончит работу с этой парой");
+
+        confirmationAlert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+
+        ButtonType userResponse = confirmationAlert.showAndWait().orElse(ButtonType.NO);
+
+
+        if (userResponse == ButtonType.YES) {
+
+            PairConfiguration pairConfig = binancePairDAO.getConfigurationForPair(binancePairDAO.getPairIdByPairName(selectedPair.getPairName()));
+            System.out.println("В методе autoDryingAction AppMainController: " + pairConfig);
+            BotConfiguration botRequest = new BotConfiguration(selectedPair, pairConfig);
+            botProvider.autoDryingBot(botRequest);
+
+        }
+
     }
     @FXML
     private void stopBotAction() {
@@ -253,7 +335,7 @@ public class AppMainController {
 
         if (userResponse == ButtonType.YES) {
 
-            PairConfiguration pairConfig = binancePairDAO.getConfigurationForPair(selectedPair.getId());
+            PairConfiguration pairConfig = binancePairDAO.getConfigurationForPair(binancePairDAO.getPairIdByPairName(selectedPair.getPairName()));
             BotConfiguration botRequest = new BotConfiguration(selectedPair, pairConfig);
             botProvider.stopBot(botRequest);
         }
@@ -263,12 +345,12 @@ public class AppMainController {
     }
     @FXML
     private void editItemAction() {
-        PairConfiguration editPair = binancePairDAO
-                .getConfigurationForPair(binancePairDAO
-                .getPairIdByPairName(selectedPairsList
-                        .getSelectionModel()
-                        .getSelectedItem()
-                        .getPairName()));
+        BinancePair pair = binancePairDAO.getBinancePairByPairName(selectedPairsList
+                .getSelectionModel()
+                .getSelectedItem()
+                .getPairName());
+        PairConfiguration editPair = binancePairDAO.getConfigurationForPair(pair.getId());
+        System.out.println(editPair);
 
         try {
             FXMLLoader loader = new FXMLLoader();
@@ -327,24 +409,58 @@ public class AppMainController {
         try {
             String encryptedApiKey = CryptoUtils.encrypt(apiKey.getText());
             String encryptedSecretKey = CryptoUtils.encrypt(secretKey.getText());
+            if(selectedStock != null){
+                binancePairDAO.saveTokens(encryptedApiKey,encryptedSecretKey, selectedStock);
+            }
+            else {
+                throw new IllegalArgumentException("Не выбрана биржа");
+            }
 
-            binancePairDAO.saveTokens(encryptedApiKey,encryptedSecretKey);
             BinanceTokens tokens = new BinanceTokens(getApiKey(), getSecretKey());
             System.out.println("Api Key = " + tokens.getApiKey() + "\nSecret key = " + tokens.getSecretKey()); //Потом нужно будет убрать эту строчку
-            binanceApiMethods.connectBinance(tokens);
-            balanceAcc.setText(String.valueOf(binanceApiMethods.getAccountBalanceForTestNet(tokens)));
+            if (selectedStock.equals("TestNetBinance")){
+                balanceAcc.setText(String.valueOf(binanceApiMethods.getAccountBalanceForTestNet(tokens)));
+            }
+
 
         } catch (IllegalArgumentException | BinanceClientException e) {
             System.err.println("An error occurred after clicking the 'Confirm' button:" + e.getMessage());
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Ошибка ввода");
-            alert.setHeaderText("Пожалуйста, проверьте правильность введенных данных");
+            alert.setHeaderText("Пожалуйста, проверьте правильность введенных данных, а также выбрана ли биржа");
             alert.getButtonTypes().setAll(ButtonType.OK);
             alert.showAndWait();
         }
 
     }
+    //Метод для выбора биржи
+    @FXML
+    private void handleRadioButtonAction() {
+        List<String> activePairs = botProvider.getPairNameInActiveBots();
+        if (activePairs.isEmpty()){
+            if (binanceRadioButton.isSelected()) {
+                selectedStock = "Binance";
+                BinanceApiMethods.setBaseURL(Constants.BINANCE_BASE_URL);
+                // Действия при выборе Binance
+            } else if (testNetBinanceRadioButton.isSelected()) {
+                selectedStock = "TestNetBinance";
+                BinanceApiMethods.setBaseURL(Constants.TESTNET_BINANCE_BASE_URL);
 
+            } else if (byBitRadioButton.isSelected()) {
+                // Действия при выборе ByBit
+                selectedStock = "ByBit";
+                BinanceApiMethods.setBaseURL(Constants.BYBIT_BASE_URL);
+            }
+        }
+        else {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Невозможно поменять биржу");
+            alert.setHeaderText("Невозможно поменять биржу, если в работе находится хотя бы одна пара");
+            alert.getButtonTypes().setAll(ButtonType.OK);
+            alert.showAndWait();
+        }
+
+    }
     //Методы для работы с потоком стратегии.
     private void updatePricesInBackground() {
         // Получение списка активных торговых пар из BotProvider
@@ -368,6 +484,7 @@ public class AppMainController {
                         pairSettingController.appMainController, //Костыль надо поправлять
                         binancePairDAO,
                         binanceApiMethods);
+                averagingSpotStrategy.setBotProvider(botProvider);
                 //averagingSpotStrategy.setBinancePairDAO(binancePairDAO);
                 //averagingSpotStrategy.setBinanceApiMethods(binanceApiMethods);
 
@@ -391,7 +508,8 @@ public class AppMainController {
     private void updateOrAddRow(PairPriceInfo pairPriceInfo) {
         String pairName = pairPriceInfo.getSymbol();
         double bidPrice = pairPriceInfo.getBidPrice();
-        double profit = calculateProfit(pairPriceInfo); // Рассчитываем профит (замените на ваш расчет)
+
+        //double profit = calculateProfit(pairPriceInfo); // Рассчитываем профит (замените на ваш расчет)
 
         // Проверяем, есть ли уже такая торговая пара в таблице
         boolean isPairExists = false;
@@ -401,8 +519,9 @@ public class AppMainController {
                 existingPair.getProfit() != pairPriceInfo.getProfit()){
                     // Обновляем существующую строку
                     existingPair.setBidPrice(bidPrice);
-                    existingPair.setProfit(profit);
+                    existingPair.setProfit(binancePairDAO.getProfitInTradeInfoForPair(binancePairDAO.getPairIdByPairName(existingPair.getSymbol())));
                     cashTable.refresh();
+
                 }
                 isPairExists = true;
                 break;
@@ -411,19 +530,27 @@ public class AppMainController {
         List<String> activeBotsList = botProvider.getPairNameInActiveBots();
         // Если нет, то добавляем новую строку
         if (!isPairExists && activeBotsList.stream().anyMatch(pair -> pair.equals(pairName))) {
-            pairPriceInfo.setProfit(profit);
+            pairPriceInfo.setProfit(binancePairDAO.getProfitInTradeInfoForPair(binancePairDAO.getPairIdByPairName(pairPriceInfo.getSymbol())));
             pairPriceInfoObservableList.add(pairPriceInfo);
+            cashTable.setStyle("-fx-control-inner-background: darkgray; -fx-base: darkgray;");
         }
     }
 
     // ***** ВРЕМЕННАЯ ЗАГЛУШКА ***** Метод для расчета профита
     private double calculateProfit(PairPriceInfo pairPriceInfo) {
-        // Здесь может быть ваш расчет профита
-        return 0; // Пример: всегда возвращает "0"
+        TradeInfo pairTradeInfo = binancePairDAO.getTradeInfoForPair(binancePairDAO.getPairIdByPairName(pairPriceInfo.getSymbol()));
+
+        BigDecimal bdProfit = BigDecimal.valueOf((pairPriceInfo.getBidPrice() * pairTradeInfo.getLotSize()) -
+                (pairTradeInfo.getBuyPrice()*pairTradeInfo.getLotSize()));
+        bdProfit = bdProfit.setScale(
+                5,
+                RoundingMode.HALF_UP);
+        return bdProfit.doubleValue();
     }
     //----------------------Служебные публичные методы-----------------------------
     public void updateSelectedPairsList(BinancePair newPair) {
         selectedPairsList.getItems().add(newPair);
+        selectedPairsList.setStyle("-fx-control-inner-background: darkgray; -fx-base: darkgray;");
     }
 
     public ListView<BinancePair> getSelectedPairsList() {
@@ -451,6 +578,12 @@ public class AppMainController {
 
     public String getSecretKey() {
         return String.valueOf(secretKey.getText());
+    }
+
+    // Метод для добавления новой записи в лог и Separator после нее
+    public void addLogEntry(String entryText) {
+        informationListView.getItems().add(entryText);
+        informationListView.setStyle("-fx-control-inner-background: darkgray; -fx-base: darkgray;");
     }
     //----------------------Служебные приватные методы-----------------------------
     private boolean containsRunningPair(String pairName) {

@@ -5,5 +5,7 @@ CREATE TABLE IF NOT EXISTS tradesInfo (
     lotSize DOUBLE NOT NULL,
     openedOrders INTEGER NOT NULL,
     transactTime INTEGER NOT NULL,
-    isTradeAllowed BOOLEAN NOT NULL DEFAULT FALSE
+    isTradeAllowed BOOLEAN NOT NULL DEFAULT FALSE,
+    profit DOUBLE NOT NULL,
+    isAutoDrying BOOLEAN NOT NULL DEFAULT FALSE
     );

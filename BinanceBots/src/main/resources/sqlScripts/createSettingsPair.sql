@@ -8,5 +8,6 @@ CREATE TABLE IF NOT EXISTS settings (
     averagingTimer INTEGER NOT NULL,
     sumToTrade DOUBLE NOT NULL,
     startingLotVolume DOUBLE NOT NULL,
-    tradingRange DOUBLE NOT NULL
+    tradingRange DOUBLE NOT NULL,
+    isChanged BOOLEAN NOT NULL DEFAULT FALSE
     );

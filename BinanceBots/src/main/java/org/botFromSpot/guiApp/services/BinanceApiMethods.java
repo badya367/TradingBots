@@ -8,6 +8,7 @@ import com.binance.connector.client.impl.spot.Market;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ComboBox;
+import org.botFromSpot.guiApp.AppMainController;
 import org.botFromSpot.guiApp.model.BinanceTokens;
 import org.botFromSpot.guiApp.model.PairPriceInfo;
 import org.botFromSpot.guiApp.services.binanceTestNetServices.TestNetSpotClient;
@@ -27,10 +28,16 @@ import java.util.*;
 
 public class BinanceApiMethods {
     private BinancePairDAO binancePairDAO;
+    private AppMainController appMainController;
+    private static String baseURL;
+
+    public static void setBaseURL(String baseURL) {BinanceApiMethods.baseURL = baseURL;}
 
     public void setBinancePairDAO(BinancePairDAO binancePairDAO) {
         this.binancePairDAO = binancePairDAO;
     }
+
+    public void setAppMainController(AppMainController appMainController) {this.appMainController = appMainController;}
 
     public void connectBinance(BinanceTokens tokens) {
         try {
@@ -102,10 +109,9 @@ public class BinanceApiMethods {
     }
     public ComboBox<String> allPairs() {
         ComboBox<String> comboBox = new ComboBox<>();
-
         try {
             // Формируем URL для получения информации о торговых парах
-            URL url = new URL("https://testnet.binance.vision/api/v3/exchangeInfo");
+            URL url = new URL(baseURL + "/api/v3/exchangeInfo");
 
             // Открываем соединение
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -172,7 +178,7 @@ public class BinanceApiMethods {
     }
     public boolean getOpenOrders(BinanceTokens tokens, String pairName){
         Map<String, Object> parameters = new LinkedHashMap<>();
-        SpotClient spotClient = new SpotClientImpl(tokens.getApiKey(),tokens.getSecretKey(), "https://testnet.binance.vision");
+        SpotClient spotClient = new SpotClientImpl(tokens.getApiKey(),tokens.getSecretKey(), baseURL);
         parameters.put("symbol", pairName);
         try {
             String result = spotClient.createTrade().getOrders(parameters);
@@ -189,32 +195,33 @@ public class BinanceApiMethods {
         }
         return false;
     }
-    public String openOrder(BinanceTokens tokens, String symbol, double quantity){
+    public String openOrder(BinanceTokens tokens, String symbol, double quantity) throws BinanceConnectorException, BinanceClientException{
         Map<String, Object> parameters = new LinkedHashMap<>();
 
-        SpotClient client = new SpotClientImpl(tokens.getApiKey(), tokens.getSecretKey(), "https://testnet.binance.vision");
+        SpotClient client = new SpotClientImpl(tokens.getApiKey(), tokens.getSecretKey(), baseURL);
 
         parameters.put("symbol", symbol);
         parameters.put("side", "BUY");
         parameters.put("type", "MARKET");
         parameters.put("quoteOrderQty", quantity);
 
-        try {
-            return client.createTrade().newOrder(parameters);
-        } catch (BinanceConnectorException e) {
-            System.err.println((String) String.format("fullErrMessage: %s", e.getMessage()));
-        } catch (BinanceClientException e) {
-            System.err.println((String) String.format("fullErrMessage: %s \nerrMessage: %s \nerrCode: %d \nHTTPStatusCode: %d",
-                    e.getMessage(), e.getErrMsg(), e.getErrorCode(), e.getHttpStatusCode()));
-        }
-
-        return null;
+        return client.createTrade().newOrder(parameters);
+//        try {
+//            return client.createTrade().newOrder(parameters);
+//        } catch (BinanceConnectorException e) {
+//            System.err.printf("fullErrMessage: %s%n", e.getMessage());
+//        } catch (BinanceClientException e) {
+//            System.err.printf("fullErrMessage: %s \nerrMessage: %s \nerrCode: %d \nHTTPStatusCode: %d%n",
+//                    e.getMessage(), e.getErrMsg(), e.getErrorCode(), e.getHttpStatusCode());
+//        }
+//
+//        return null;
     }
 
     public String closeOrder(BinanceTokens tokens, String symbol, double quantity){
         Map<String, Object> parameters = new LinkedHashMap<>();
 
-        SpotClient client = new SpotClientImpl(tokens.getApiKey(), tokens.getSecretKey(), "https://testnet.binance.vision");
+        SpotClient client = new SpotClientImpl(tokens.getApiKey(), tokens.getSecretKey(), baseURL);
 
         parameters.put("symbol", symbol);
         parameters.put("side", "SELL");
@@ -232,7 +239,7 @@ public class BinanceApiMethods {
         return null;
     }
     public List<PairPriceInfo> getActualPriceForPairs(BinanceTokens tokens, List<String> pairs) {
-        SpotClient spotClient = new SpotClientImpl(tokens.getApiKey(),tokens.getSecretKey(), "https://testnet.binance.vision");
+        SpotClient spotClient = new SpotClientImpl(tokens.getApiKey(),tokens.getSecretKey(), baseURL);
 
         Map<String, Object> parameters = new LinkedHashMap<>();
         parameters.put("symbols", pairs);
@@ -242,7 +249,7 @@ public class BinanceApiMethods {
     }
     public double getActualBidPriceForPair(String symbol) {
         BinanceTokens tokens = binancePairDAO.getTokens();
-        SpotClient spotClient = new SpotClientImpl(tokens.getApiKey(), tokens.getSecretKey(), "https://testnet.binance.vision");
+        SpotClient spotClient = new SpotClientImpl(tokens.getApiKey(), tokens.getSecretKey(), baseURL);
         Map<String, Object> parameters = new LinkedHashMap<>();
         parameters.put("symbol", symbol);
 
@@ -257,7 +264,7 @@ public class BinanceApiMethods {
     public int getOrderIdByPairName(BinanceTokens tokens, String symbol){
         Map<String, Object> parameters = new LinkedHashMap<>();
         int orderID = 0;
-        SpotClient client = new SpotClientImpl(tokens.getApiKey(), tokens.getSecretKey(), "https://testnet.binance.vision");
+        SpotClient client = new SpotClientImpl(tokens.getApiKey(), tokens.getSecretKey(), baseURL);
 
         parameters.put("symbol", symbol);
 
@@ -279,7 +286,7 @@ public class BinanceApiMethods {
     public void getAvgBuyPrice(BinanceTokens tokens, List<PairPriceInfo> pairs) {
         Map<String, Object> parameters = new LinkedHashMap<>();
 
-        SpotClient client = new SpotClientImpl(tokens.getApiKey(), tokens.getSecretKey(), "https://testnet.binance.vision");
+        SpotClient client = new SpotClientImpl(tokens.getApiKey(), tokens.getSecretKey(), baseURL);
         for (PairPriceInfo pair: pairs){
             parameters.put("symbols", pair.getSymbol());
         }

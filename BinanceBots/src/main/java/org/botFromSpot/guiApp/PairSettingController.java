@@ -6,7 +6,9 @@ import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.botFromSpot.guiApp.model.BinancePair;
+import org.botFromSpot.guiApp.model.BotConfiguration;
 import org.botFromSpot.guiApp.services.BinanceApiMethods;
+import org.botFromSpot.guiApp.services.BotProvider;
 import org.botFromSpot.guiApp.services.PairConfiguration;
 import org.botFromSpot.guiApp.services.BinancePairDAO;
 
@@ -14,6 +16,8 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 
 public class PairSettingController {
     @FXML
@@ -38,14 +42,16 @@ public class PairSettingController {
 
     public void setUpdatingConfig(boolean updatingConfig) {isUpdatingConfig = updatingConfig;}
 
-    AppMainController appMainController;
-    BinanceApiMethods binanceApiMethods;
-    BinancePairDAO binancePairDAO;
-
+    public AppMainController appMainController;
+    private BinanceApiMethods binanceApiMethods;
+    private BinancePairDAO binancePairDAO;
+    private BotProvider botProvider;
     public void setBinanceApiMethods(BinanceApiMethods binanceApiMethods) {this.binanceApiMethods = binanceApiMethods;}
     public void setBinancePairDAO(BinancePairDAO binancePairDAO) {this.binancePairDAO = binancePairDAO;}
 
     public void setAppMainController(AppMainController appMainController) {this.appMainController = appMainController;}
+
+    public void setBotProvider(BotProvider botProvider) {this.botProvider = botProvider;}
 
     @FXML
     public void applySettingsButtonAction(ActionEvent event) {
@@ -100,9 +106,14 @@ public class PairSettingController {
 
             if (isUpdatingConfig) {
                 // Вызывается из AppMainController, обновляем существующую запись
+                pairConfiguration.setChanged(true);
                 binancePairDAO.updateBotConfiguration(pairConfiguration);
+
+                BotConfiguration botRequest = new BotConfiguration(selectedPair, pairConfiguration);
+                botProvider.autoDryingBot(botRequest);
             } else {
                 // Вызывается из LoadPairController, создаем новую запись
+                pairConfiguration.setChanged(false);
                 binancePairDAO.addBotConfiguration(pairConfiguration);
             }
             ((Stage) takeProfit.getScene().getWindow()).close();
@@ -140,14 +151,17 @@ public class PairSettingController {
     }
     public void fillFields(PairConfiguration botConfiguration){
         if (botConfiguration != null){
-            takeProfit.setText(String.valueOf(botConfiguration.getTakeProfit()));
-            averagingStep.setText(String.valueOf(botConfiguration.getAveragingStep()));
+            DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+            DecimalFormat decimalFormat = new DecimalFormat("#.##########", symbols);
+
+            takeProfit.setText(decimalFormat.format(botConfiguration.getTakeProfit()));
+            averagingStep.setText(decimalFormat.format(botConfiguration.getAveragingStep()));
             multiplier.setText(String.valueOf(botConfiguration.getMultiplier()));
             quantityOrders.setText(String.valueOf(botConfiguration.getQuantityOrders()));
             averagingTimer.setText(String.valueOf(botConfiguration.getAveragingTimer()));
             sumToTrade.setText(String.valueOf(botConfiguration.getSumToTrade()));
-            startingLotVolume.setText(String.valueOf(botConfiguration.getStartingLotVolume()));
-            tradingRange.setText(String.valueOf(botConfiguration.getTradingRange()));
+            startingLotVolume.setText(decimalFormat.format(botConfiguration.getStartingLotVolume()));
+            tradingRange.setText(decimalFormat.format(botConfiguration.getTradingRange()));
         }
 
     }

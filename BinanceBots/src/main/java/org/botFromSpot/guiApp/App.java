@@ -30,6 +30,7 @@ public class App extends Application {
         loader.setLocation(xmlUrl);
         Parent root = loader.load();
         primaryStage.setScene(new Scene(root));
+        primaryStage.setTitle("Got AS God");
         primaryStage.show();
 
     }

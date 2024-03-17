@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS tokens (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     api_key VARCHAR(255) NOT NULL,
-    secret_key VARCHAR(255) NOT NULL
+    secret_key VARCHAR(255) NOT NULL,
+    stock TEXT NOT NULL
 );
