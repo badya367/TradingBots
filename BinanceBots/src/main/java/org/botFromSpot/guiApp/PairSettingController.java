@@ -79,10 +79,11 @@ public class PairSettingController {
                     binanceApiMethods.getPrecisionSizeForTicker(selectedPair.getPairName(), false),
                     RoundingMode.HALF_UP);
             double checkStartingLotQuoteAsset = bdStartinLotQuoteAsset.doubleValue();
-            double checkStartingLotBaseAsset = binanceApiMethods.convertingInBaseAsset(checkStartingLotQuoteAsset, selectedPair.getPairName());
-            if(checkStartingLotBaseAsset < binanceApiMethods.getMinLotSizeForBuy(selectedPair.getPairName())) {
-                throw new IllegalArgumentException("The volume of the starting lot is less than the minimum allowed value for purchase. \n" +
-                        "Increase the volume for the bot or reduce the number of orders/multiplier");
+            if(checkStartingLotQuoteAsset < binanceApiMethods.getMinLotSizeForBuy(selectedPair.getPairName())) {
+                throw new IllegalArgumentException("Объём стартового лота слишком мал для запуска бота, \n" +
+                        "увеличьте объем для бота или уменьшите количество ордеров/множитель. \n" +
+                        "Минимальный объём в сделке = " + binanceApiMethods.getMinLotSizeForBuy(selectedPair.getPairName()) +
+                        "$");
             }
 
             PairConfiguration pairConfiguration = new PairConfiguration();

@@ -385,8 +385,8 @@ public class BinanceApiMethods {
             // Ищем фильтр LOT_SIZE
             for (int i = 0; i < filtersArray.length(); i++) {
                 JSONObject filter = filtersArray.getJSONObject(i);
-                if ("LOT_SIZE".equals(filter.getString("filterType"))) {
-                    String minQty = filter.getString("minQty");
+                if ("NOTIONAL".equals(filter.getString("filterType"))) {
+                    String minQty = filter.getString("minNotional");
                     minLotSize = Double.parseDouble(minQty);
                 }
             }
@@ -421,8 +421,7 @@ public class BinanceApiMethods {
     public double convertingInBaseAsset(double quoteAsset, String symbol){
         double baseAssetSize;
 
-        if (quoteAsset < 1) { baseAssetSize = quoteAsset * getActualBidPriceForPair(symbol);}
-        else { baseAssetSize = quoteAsset / getActualBidPriceForPair(symbol);}
+        baseAssetSize = quoteAsset / getActualBidPriceForPair(symbol);
 
         return baseAssetSize;
     }

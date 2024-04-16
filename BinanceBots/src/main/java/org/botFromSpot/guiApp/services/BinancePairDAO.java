@@ -1,5 +1,6 @@
 package org.botFromSpot.guiApp.services;
 
+import org.botFromSpot.guiApp.AppMainController;
 import org.botFromSpot.guiApp.model.BinancePair;
 import org.botFromSpot.guiApp.model.BinanceTokens;
 import org.botFromSpot.guiApp.model.TradeInfo;
@@ -14,10 +15,14 @@ import java.util.List;
 
 public class BinancePairDAO {
     private DataBaseService dataBaseService;
+    private AppMainController appMainController;
 
     public void setDataBaseService(DataBaseService dataBaseService) {
         this.dataBaseService = dataBaseService;
     }
+
+    public void setAppMainController(AppMainController appMainController) {this.appMainController = appMainController;}
+
     public void saveTokens(String encryptedApiKey, String encryptedSecretKey, String stock) {
         Connection connection = dataBaseService.connectionDB();
         try {
@@ -29,7 +34,9 @@ public class BinancePairDAO {
                 preparedStatement.executeUpdate();
             }
         } catch (SQLException e) {
+            appMainController.addLogEntry(e.getMessage());
             throw new RuntimeException(e);
+
         }
     }
 

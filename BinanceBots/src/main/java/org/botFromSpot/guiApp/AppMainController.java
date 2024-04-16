@@ -28,6 +28,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.Socket;
 import java.net.URL;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -336,6 +338,7 @@ public class AppMainController {
         if (userResponse == ButtonType.YES) {
 
             PairConfiguration pairConfig = binancePairDAO.getConfigurationForPair(binancePairDAO.getPairIdByPairName(selectedPair.getPairName()));
+            pairConfig.setChanged(false);
             BotConfiguration botRequest = new BotConfiguration(selectedPair, pairConfig);
             botProvider.stopBot(botRequest);
         }
@@ -481,7 +484,7 @@ public class AppMainController {
 
                 StrategyAveragingForSpot averagingSpotStrategy = strategyProvider.getStrategyAveragingForSpot(
                         botConfig,
-                        pairSettingController.appMainController, //Костыль надо поправлять
+                        pairSettingController.appMainController, // todo Костыль надо поправлять
                         binancePairDAO,
                         binanceApiMethods);
                 averagingSpotStrategy.setBotProvider(botProvider);

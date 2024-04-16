@@ -32,6 +32,7 @@
     </bean>
     <bean id="binancePairDAO" class="org.botFromSpot.guiApp.services.BinancePairDAO">
         <property name="dataBaseService" ref="dataBaseService"/>
+        <property name="appMainController" ref="appMainController"/>
     </bean>
     <bean id="binanceApiMethods" class="org.botFromSpot.guiApp.services.BinanceApiMethods">
         <property name="binancePairDAO" ref="binancePairDAO"/>

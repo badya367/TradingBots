@@ -4,24 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fe4f2d17-765e-4b5c-94b2-d67003c6b666" name="Changes" comment="БОЛЬШАЯ ОБНОВА:&#10;Добавлены классы для работы со стратегией(TradeInfo.java, PairPriceInfo.java).&#10;Класс StrategyAveragingForSpot.java добавлен в бины для Spring.&#10;Добавлена таблица tradesInfo в базу данных. &#10;Добавлены соотвествующие методы в бд (add, update, delete)&#10;Реализована стратегия для торговли. &#10;Код подготовлен для создания bat файла.">
-      <change afterPath="$PROJECT_DIR$/BinanceBots/src/main/resources/tabHeaderStyle.css" afterDir="false" />
+    <list default="true" id="fe4f2d17-765e-4b5c-94b2-d67003c6b666" name="Changes" comment="АЛЬФА ВЕРСИЯ бот v.0.0.1(Подготовлена к формированию exe)&#10;Багофикс.&#10;добавление функционала. При изменении настроек теперь бот включает автосушку и сам перезапускается с новыми настройками.&#10;добавление выбора торговой биржи.&#10;набросок дизайна программы.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/App.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/App.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/AppMainController.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/AppMainController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/PairSettingController.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/PairSettingController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/model/StrategyAveragingForSpot.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/model/StrategyAveragingForSpot.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/model/TradeInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/model/TradeInfo.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/BinanceApiMethods.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/BinanceApiMethods.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/BinancePairDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/BinancePairDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/BotProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/BotProvider.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/PairConfiguration.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/services/PairConfiguration.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/utils/Constants.java" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/java/org/botFromSpot/guiApp/utils/Constants.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/resources/app.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/resources/app.fxml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/resources/applicationContext.xml" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/resources/applicationContext.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/resources/sqlScripts/createSettingsPair.sql" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/resources/sqlScripts/createSettingsPair.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/resources/sqlScripts/createTokens.sql" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/resources/sqlScripts/createTokens.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BinanceBots/src/main/resources/sqlScripts/createTradesInfo.sql" beforeDir="false" afterPath="$PROJECT_DIR$/BinanceBots/src/main/resources/sqlScripts/createTradesInfo.sql" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,8 +63,15 @@
     &quot;Application.App.executor&quot;: &quot;Run&quot;,
     &quot;Application.Main.executor&quot;: &quot;Run&quot;,
     &quot;Maven. [org.apache.maven.plugins:maven-archetype-plugin:RELEASE:generate].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.BinanceBots [clean,install].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.BinanceBots [clean,package,install].executor&quot;: &quot;Run&quot;,
     &quot;Maven.BinanceBots [clean,package].executor&quot;: &quot;Run&quot;,
     &quot;Maven.BinanceBots [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.BinanceBots [compile].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.BinanceBots [install].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.BinanceBots [org.apache.maven.plugins:maven-compiler-plugin:3.11.0:compile].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.BinanceBots [org.apache.maven.plugins:maven-jar-plugin:3.3.0:jar].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.BinanceBots [org.apache.maven.plugins:maven-shade-plugin:3.2.0:shade].executor&quot;: &quot;Run&quot;,
     &quot;Maven.BinanceBots [org.openjfx:javafx-maven-plugin:0.0.8:jlink].executor&quot;: &quot;Run&quot;,
     &quot;Maven.BinanceBots [org.openjfx:javafx-maven-plugin:0.0.8:run].executor&quot;: &quot;Run&quot;,
     &quot;Maven.BinanceBots [package].executor&quot;: &quot;Run&quot;,
@@ -271,7 +267,15 @@
       <option name="project" value="LOCAL" />
       <updated>1710087635731</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="АЛЬФА ВЕРСИЯ бот v.0.0.1(Подготовлена к формированию exe)&#10;Багофикс.&#10;добавление функционала. При изменении настроек теперь бот включает автосушку и сам перезапускается с новыми настройками.&#10;добавление выбора торговой биржи.&#10;набросок дизайна программы.">
+      <option name="closed" value="true" />
+      <created>1710719114500</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1710719114500</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -299,7 +303,8 @@
     <MESSAGE value="TextFields для ключей от биржи был заменён на PasswordFields.&#10;Добавлена новая таблица tokens, теперь нет необходимости при каждом запуске вводить ключи от биржи. &#10;Добавлен класс CrytoUtils для шифрования/расшифрования ключей.&#10;Добавлен метод для проверки открытых сделок по определенной торговой паре (BinanceApiMethods).&#10;Реализован класс BotConfiguration, добавлены get методы для получения подробных данных о паре и настройка, переопределены equals, hashcode, toString для правильного сравнения. &#10;Добавлена логика старта и остановка бота, в неё включены проверки на то был ли запущен бот с такой парой, хватает ли баланса(с учётом зарезервированного), нет ли открытых ордеров с данной парой(так как это может помешать логике работы бота); При прохождении всех проверок резервируюется баланс отведённый для этого бота. &#10;При остановке бота, зарезервированный баланс освобождается." />
     <MESSAGE value="Добавлен новый поток sheduledExecutorService в AppMainController.java для работы со стратегией. &#10;Изменена таблица в главном окне приложения, теперь отображает пару/текущую цену пары/профит.&#10;Добавлен метод в BinanceApiMethods для получения актуальный цен по списку валют.&#10;Добавлен класс PairPriceInfo для создания объектов, которые будут использованы в таблице главного окна AppMainController.&#10;Реализованы классы BotProvider и StrategyAveragingForSpot для работы со стратегией бота." />
     <MESSAGE value="БОЛЬШАЯ ОБНОВА:&#10;Добавлены классы для работы со стратегией(TradeInfo.java, PairPriceInfo.java).&#10;Класс StrategyAveragingForSpot.java добавлен в бины для Spring.&#10;Добавлена таблица tradesInfo в базу данных. &#10;Добавлены соотвествующие методы в бд (add, update, delete)&#10;Реализована стратегия для торговли. &#10;Код подготовлен для создания bat файла." />
-    <option name="LAST_COMMIT_MESSAGE" value="БОЛЬШАЯ ОБНОВА:&#10;Добавлены классы для работы со стратегией(TradeInfo.java, PairPriceInfo.java).&#10;Класс StrategyAveragingForSpot.java добавлен в бины для Spring.&#10;Добавлена таблица tradesInfo в базу данных. &#10;Добавлены соотвествующие методы в бд (add, update, delete)&#10;Реализована стратегия для торговли. &#10;Код подготовлен для создания bat файла." />
+    <MESSAGE value="АЛЬФА ВЕРСИЯ бот v.0.0.1(Подготовлена к формированию exe)&#10;Багофикс.&#10;добавление функционала. При изменении настроек теперь бот включает автосушку и сам перезапускается с новыми настройками.&#10;добавление выбора торговой биржи.&#10;набросок дизайна программы." />
+    <option name="LAST_COMMIT_MESSAGE" value="АЛЬФА ВЕРСИЯ бот v.0.0.1(Подготовлена к формированию exe)&#10;Багофикс.&#10;добавление функционала. При изменении настроек теперь бот включает автосушку и сам перезапускается с новыми настройками.&#10;добавление выбора торговой биржи.&#10;набросок дизайна программы." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
